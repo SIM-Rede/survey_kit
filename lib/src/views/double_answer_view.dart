@@ -29,12 +29,17 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   bool _isValid = false;
   FocusNode inputFocus = FocusNode();
 
+  CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
+    locale: 'pt_BR',
+    symbol: 'R\$',
+  );
+
   @override
   void initState() {
     super.initState();
     _doubleAnswerFormat = widget.questionStep.answerFormat as DoubleAnswerFormat;
     _controller = TextEditingController();
-    _controller.text = widget.result?.result?.toString() ?? '';
+    _controller.text = _formatter.format(widget.result?.result?.toString() ?? '');
     _checkValidation(_controller.text, _controller.text);
     _startDate = DateTime.now();
 
@@ -51,24 +56,36 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
 
   void _checkValidation(String text, String value) {
     double parsedValue = 0.0;
-    if (double.tryParse(text.replaceAll(',', '.')) != null) {
-      parsedValue = double.tryParse(text.replaceAll(',', '.'))!;
+    if (double.tryParse(text
+            .replaceAll('.', '')
+            .replaceAll(',', '.')
+            .replaceAll('R', '')
+            .replaceAll('\$', '')
+            .replaceAll(' ', '')) !=
+        null) {
+      parsedValue = double.tryParse(text
+          .replaceAll('.', '')
+          .replaceAll(',', '.')
+          .replaceAll('R', '')
+          .replaceAll('\$', '')
+          .replaceAll(' ', ''))!;
     }
     setState(() {
       _isValid = value.isNotEmpty &&
           text.isNotEmpty &&
-          double.tryParse(text.replaceAll(',', '.')) != null &&
+          double.tryParse(text
+                  .replaceAll('.', '')
+                  .replaceAll(',', '.')
+                  .replaceAll('R', '')
+                  .replaceAll('\$', '')
+                  .replaceAll(' ', '')) !=
+              null &&
           parsedValue > 0;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
-      locale: 'pt_BR',
-      symbol: 'R\$',
-    );
-
     return StepView(
       step: widget.questionStep,
       resultFunction: () => DoubleQuestionResult(
@@ -76,7 +93,14 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
         startDate: _startDate,
         endDate: DateTime.now(),
         valueIdentifier: _controller.text,
-        result: _value,
+        result: double.tryParse(_controller.text
+                .replaceAll('.', '')
+                .replaceAll(',', '.')
+                .replaceAll('R', '')
+                .replaceAll('\$', '')
+                .replaceAll(' ', '')) ??
+            _doubleAnswerFormat.defaultValue ??
+            null,
       ),
       isValid: _isValid || widget.questionStep.isOptional,
       title: widget.questionStep.title.isNotEmpty
