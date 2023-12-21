@@ -22,6 +22,7 @@ class ImageAnswerView extends StatefulWidget {
 class _ImageAnswerViewState extends State<ImageAnswerView> {
   late final ImageAnswerFormat _imageAnswerFormat;
   late final DateTime _startDate;
+  final ImagePicker _picker = ImagePicker();
 
   bool _isValid = false;
   String filePath = '';
@@ -29,6 +30,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   @override
   void initState() {
     super.initState();
+    _retrieveLostData();
     _imageAnswerFormat = widget.questionStep.answerFormat as ImageAnswerFormat;
     _startDate = DateTime.now();
   }
@@ -36,6 +38,24 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  Future<void> _retrieveLostData() async {
+    final LostDataResponse response = await _picker.retrieveLostData();
+
+    if (response.isEmpty) {
+      return;
+    }
+    if (response.file != null) {
+      setState(() {
+        if (response.file != null && response.file?.path != null)
+          filePath = response.file!.path;
+
+        debugPrint('retrieved path: $filePath');
+      });
+    } else {
+      debugPrint(response.exception!.code);
+    }
   }
 
   @override
@@ -158,15 +178,15 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   }
 
   Future<void> _openCamera() async {
-    var picture = await ImagePicker().pickImage(
+    var picture = await _picker.pickImage(
       preferredCameraDevice: CameraDevice.rear,
       source: ImageSource.camera,
     );
 
-    Navigator.of(context).pop();
+    if (picture != null) Navigator.of(context).pop();
 
     setState(() {
-      filePath = picture!.path;
+      if (picture != null && picture.path.isNotEmpty) filePath = picture.path;
 
       if (filePath.isNotEmpty) {
         _isValid = true;
@@ -175,7 +195,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   }
 
   Future<void> _openGallery() async {
-    var picture = await ImagePicker().pickImage(
+    var picture = await _picker.pickImage(
       source: ImageSource.gallery,
     );
 
