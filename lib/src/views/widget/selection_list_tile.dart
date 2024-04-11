@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SelectionListTile extends StatelessWidget {
   final String text;
@@ -19,14 +20,13 @@ class SelectionListTile extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
           child: ListTile(
-            title: Text(
-              text + 'texto',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: isSelected
-                        ? Colors.blue
-                        : Theme.of(context).textTheme.headlineSmall?.color,
-                  ),
-            ),
+            title: Text(text, style: GoogleFonts.notoColorEmoji()
+                // Theme.of(context).textTheme.headlineSmall?.copyWith(
+                //       color: isSelected
+                //           ? Colors.blue
+                //           : Theme.of(context).textTheme.headlineSmall?.color,
+                // ),
+                ),
             trailing: isSelected
                 ? Icon(
                     Icons.check,
