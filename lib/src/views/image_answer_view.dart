@@ -140,16 +140,28 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
                       _openCamera();
                     }
                   },
-                  icon: const Icon(Icons.camera),
-                  label: const Text('Câmera'),
+                  icon: const Icon(
+                    Icons.photo_camera,
+                    size: 32,
+                  ),
+                  label: const Text(
+                    'Câmera',
+                    style: TextStyle(fontSize: 22),
+                  ),
                 ),
                 if (_imageAnswerFormat.useGallery)
                   Padding(padding: EdgeInsets.all(8.0)),
                 if (_imageAnswerFormat.useGallery)
                   TextButton.icon(
                       onPressed: _openGallery,
-                      icon: const Icon(Icons.collections),
-                      label: Text('Galeria'))
+                      icon: const Icon(
+                        Icons.collections,
+                        size: 32,
+                      ),
+                      label: Text(
+                        'Galeria',
+                        style: TextStyle(fontSize: 22),
+                      ))
               ],
             ),
           ),
