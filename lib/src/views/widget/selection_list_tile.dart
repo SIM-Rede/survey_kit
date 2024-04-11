@@ -20,13 +20,18 @@ class SelectionListTile extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
           child: ListTile(
-            title: Text(text, style: GoogleFonts.notoColorEmoji()
-                // Theme.of(context).textTheme.headlineSmall?.copyWith(
-                //       color: isSelected
-                //           ? Colors.blue
-                //           : Theme.of(context).textTheme.headlineSmall?.color,
-                // ),
-                ),
+            title: Text(
+              text,
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(
+                    color: isSelected
+                        ? Colors.blue
+                        : Theme.of(context).textTheme.headlineSmall?.color,
+                  )
+                  .merge(GoogleFonts.notoColorEmoji()),
+            ),
             trailing: isSelected
                 ? Icon(
                     Icons.check,
