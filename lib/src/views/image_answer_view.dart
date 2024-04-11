@@ -109,11 +109,12 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                GestureDetector(
-                  child: Text('Tirar foto'),
-                  onTap: () {
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton.icon(
+                  onPressed: () {
                     if (_imageAnswerFormat.hintImage != null &&
                         _imageAnswerFormat.hintTitle != null) {
                       showDialog(
@@ -139,16 +140,16 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
                       _openCamera();
                     }
                   },
+                  icon: const Icon(Icons.camera),
+                  label: const Text('Câmera'),
                 ),
-                Padding(padding: EdgeInsets.all(8.0)),
-                _imageAnswerFormat.useGallery
-                    ? GestureDetector(
-                        child: Text('Selecionar na galeria'),
-                        onTap: () {
-                          _openGallery();
-                        },
-                      )
-                    : SizedBox(),
+                if (_imageAnswerFormat.useGallery)
+                  Padding(padding: EdgeInsets.all(8.0)),
+                if (_imageAnswerFormat.useGallery)
+                  TextButton.icon(
+                      onPressed: _openGallery,
+                      icon: const Icon(Icons.collections),
+                      label: Text('Galeria'))
               ],
             ),
           ),
