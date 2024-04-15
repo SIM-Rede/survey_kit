@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:survey_kit/src/widget/emoji_text_widget.dart';
 
 class SelectionListTile extends StatelessWidget {
   final String text;
@@ -19,11 +20,12 @@ class SelectionListTile extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
           child: ListTile(
-            title: Text(
-              text,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color:
-                        isSelected ? Colors.blue : Theme.of(context).textTheme.headlineSmall?.color,
+            title: EmojiText(
+              text: text,
+              textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: isSelected
+                        ? Colors.blue
+                        : Theme.of(context).textTheme.headlineSmall?.color,
                   ),
             ),
             trailing: isSelected
