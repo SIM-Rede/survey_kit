@@ -7,6 +7,7 @@ import 'package:survey_kit/src/result/question/multiple_choice_question_result.d
 import 'package:survey_kit/src/result/question/multiple_double_question_result.dart';
 import 'package:survey_kit/src/result/question/scale_question_result.dart';
 import 'package:survey_kit/src/result/question/single_choice_question_result.dart';
+import 'package:survey_kit/src/result/question/star_question_result.dart';
 import 'package:survey_kit/src/result/question/text_question_result.dart';
 import 'package:survey_kit/src/result/question/time_question_result.dart';
 import 'package:survey_kit/src/result/result.dart';
@@ -41,7 +42,8 @@ class StepResult extends Result {
     );
   }
 
-  factory StepResult.fromJson(Map<String, dynamic> json) => _$StepResultFromJson(json);
+  factory StepResult.fromJson(Map<String, dynamic> json) =>
+      _$StepResultFromJson(json);
 
   Map<String, dynamic> toJson() => _$StepResultToJson(this);
 
@@ -96,6 +98,10 @@ class _Converter implements JsonConverter<List<QuestionResult>, Object> {
       } else if (qr is TextQuestionResult) {
         final qrJson = qr.toJson();
         qrJson['type'] = (TextQuestionResult).toString();
+        allQuestionResultsEncoded.add(qrJson);
+      } else if (qr is StarQuestionResult) {
+        final qrJson = qr.toJson();
+        qrJson['type'] = (StarQuestionResult).toString();
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is TimeQuestionResult) {
         final qrJson = qr.toJson();
