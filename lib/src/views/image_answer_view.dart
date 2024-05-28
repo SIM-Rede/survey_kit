@@ -133,54 +133,56 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextButton.icon(
-                  onPressed: () {
-                    if (_imageAnswerFormat.hintImage != null &&
-                        _imageAnswerFormat.hintTitle != null) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text(
-                            _imageAnswerFormat.hintTitle.toString(),
-                            style: TextStyle(color: Colors.black),
+                if (_imageAnswerFormat.useCamera)
+                  TextButton.icon(
+                    onPressed: () {
+                      if (_imageAnswerFormat.hintImage != null &&
+                          _imageAnswerFormat.hintTitle != null) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text(
+                              _imageAnswerFormat.hintTitle.toString(),
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            content: Image.network(
+                              _imageAnswerFormat.hintImage.toString(),
+                            ),
+                            actions: [
+                              TextButton(
+                                  onPressed: () async {
+                                    await _openCamera();
+                                  },
+                                  child: Text('Abrir câmera')),
+                            ],
                           ),
-                          content: Image.network(
-                            _imageAnswerFormat.hintImage.toString(),
-                          ),
-                          actions: [
-                            TextButton(
-                                onPressed: () async {
-                                  await _openCamera();
-                                },
-                                child: Text('Abrir câmera')),
-                          ],
-                        ),
-                      );
-                    } else {
-                      _openCamera();
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.photo_camera,
-                    size: 32,
+                        );
+                      } else {
+                        _openCamera();
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.photo_camera,
+                      size: 30,
+                    ),
+                    label: const Text(
+                      'Câmera',
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
-                  label: const Text(
-                    'Câmera',
-                    style: TextStyle(fontSize: 22),
-                  ),
-                ),
-                if (_imageAnswerFormat.useGallery)
+                if (_imageAnswerFormat.useGallery &&
+                    _imageAnswerFormat.useCamera)
                   Padding(padding: EdgeInsets.all(8.0)),
                 if (_imageAnswerFormat.useGallery)
                   TextButton.icon(
                       onPressed: _openGallery,
                       icon: const Icon(
                         Icons.collections,
-                        size: 32,
+                        size: 30,
                       ),
                       label: Text(
                         'Galeria',
-                        style: TextStyle(fontSize: 22),
+                        style: TextStyle(fontSize: 20),
                       ))
               ],
             ),
