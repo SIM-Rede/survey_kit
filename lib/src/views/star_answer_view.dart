@@ -91,6 +91,9 @@ class _StarAnswerViewState extends State<StarAnswerView> {
 
   @override
   void initState() {
+    if (widget.result != null && widget.result?.result != null) {
+      this.rating = widget.result!.result!.toDouble() / 2;
+    }
     super.initState();
     _starAnswerFormat = widget.questionStep.answerFormat as StarAnswerFormat;
     _startDate = DateTime.now();
