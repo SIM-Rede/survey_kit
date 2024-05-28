@@ -152,6 +152,8 @@ class _Converter implements JsonConverter<List<QuestionResult>, Object> {
         results.add(MultipleDoubleQuestionResult.fromJson(qData));
       } else if (qType == (ScaleQuestionResult).toString()) {
         results.add(ScaleQuestionResult.fromJson(qData));
+      } else if (qType == (StarQuestionResult).toString()) {
+        results.add(StarQuestionResult.fromJson(qData));
       } else if (qType == (SingleChoiceQuestionResult).toString()) {
         results.add(SingleChoiceQuestionResult.fromJson(qData));
       } else if (qType == (TextQuestionResult).toString()) {

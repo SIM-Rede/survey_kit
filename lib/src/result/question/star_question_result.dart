@@ -6,13 +6,13 @@ import 'package:json_annotation/json_annotation.dart';
 part 'star_question_result.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class StarQuestionResult extends QuestionResult<double?> {
+class StarQuestionResult extends QuestionResult<int?> {
   StarQuestionResult({
     required Identifier id,
     required DateTime startDate,
     required DateTime endDate,
     required String valueIdentifier,
-    required double? result,
+    required int? result,
   }) : super(
           id: id,
           startDate: startDate,
