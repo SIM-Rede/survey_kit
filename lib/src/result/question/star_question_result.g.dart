@@ -12,7 +12,7 @@ StarQuestionResult _$StarQuestionResultFromJson(Map<String, dynamic> json) =>
       startDate: DateTime.parse(json['startDate'] as String),
       endDate: DateTime.parse(json['endDate'] as String),
       valueIdentifier: json['valueIdentifier'] as String,
-      result: (json['result'] as num?)?.toDouble(),
+      result: json['result'] as int?,
     );
 
 Map<String, dynamic> _$StarQuestionResultToJson(StarQuestionResult instance) =>

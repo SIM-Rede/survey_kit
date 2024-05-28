@@ -110,7 +110,7 @@ class _StarAnswerViewState extends State<StarAnswerView> {
         startDate: _startDate,
         endDate: DateTime.now(),
         valueIdentifier: rating.toString(),
-        result: rating,
+        result: (rating * 2).toInt(),
       ),
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -136,7 +136,7 @@ class _StarAnswerViewState extends State<StarAnswerView> {
           ),
           SizedBox(height: 16),
           Text(
-            (rating * 2).toString(),
+            (rating * 2).toInt().toString(),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w500,
