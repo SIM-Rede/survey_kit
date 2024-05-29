@@ -138,13 +138,6 @@ class _StarAnswerViewState extends State<StarAnswerView> {
             ],
           ),
           SizedBox(height: 16),
-          Text(
-            (rating * 2).toInt().toString(),
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
         ],
       ),
     );
