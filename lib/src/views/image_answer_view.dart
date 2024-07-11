@@ -1,19 +1,20 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:survey_kit/src/answer_format/image_answer_format.dart';
 import 'package:survey_kit/src/result/question/image_question_result.dart';
 import 'package:survey_kit/src/steps/predefined_steps/question_step.dart';
 import 'package:survey_kit/src/views/widget/step_view.dart';
 
 class ImageAnswerView extends StatefulWidget {
-  final QuestionStep questionStep;
-  final ImageQuestionResult? result;
-
   const ImageAnswerView({
-    Key? key,
+    super.key,
     required this.questionStep,
     required this.result,
-  }) : super(key: key);
+  });
+  final QuestionStep questionStep;
+  final ImageQuestionResult? result;
 
   @override
   State<ImageAnswerView> createState() => _ImageAnswerViewState();
@@ -46,10 +47,12 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
     if (response.isEmpty) {
       return;
     }
+
     if (response.file != null) {
       setState(() {
-        if (response.file != null && response.file?.path != null)
+        if (response.file != null && response.file?.path != null) {
           filePath = response.file!.path;
+        }
 
         debugPrint('retrieved path: $filePath');
       });
@@ -78,40 +81,37 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
             )
           : widget.questionStep.content,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 32.0),
-        child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 32),
+        child: SizedBox(
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 32.0,
-                  vertical: 8.0,
+                  horizontal: 32,
+                  vertical: 8,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        _optionsDialogBox();
-                      },
+                      onPressed: _optionsDialogBox,
                       child: Text(_imageAnswerFormat.buttonText),
                     ),
-                    filePath.isNotEmpty
-                        ? Flexible(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                filePath
-                                    .split('/')[filePath.split('/').length - 1],
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
+                    if (filePath.isNotEmpty)
+                      Flexible(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            filePath.split('/')[filePath.split('/').length - 1],
+                            style: const TextStyle(
+                              fontSize: 12,
                             ),
-                          )
-                        : SizedBox(),
+                          ),
+                        ),
+                      )
+                    else
+                      const SizedBox(),
                   ],
                 ),
               ),
@@ -143,17 +143,18 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
                           builder: (context) => AlertDialog(
                             title: Text(
                               _imageAnswerFormat.hintTitle.toString(),
-                              style: TextStyle(color: Colors.black),
+                              style: const TextStyle(color: Colors.black),
                             ),
                             content: Image.network(
                               _imageAnswerFormat.hintImage.toString(),
                             ),
                             actions: [
                               TextButton(
-                                  onPressed: () async {
-                                    await _openCamera();
-                                  },
-                                  child: Text('Abrir câmera')),
+                                onPressed: () async {
+                                  await _openCamera();
+                                },
+                                child: const Text('Abrir câmera'),
+                              ),
                             ],
                           ),
                         );
@@ -172,18 +173,19 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
                   ),
                 if (_imageAnswerFormat.useGallery &&
                     _imageAnswerFormat.useCamera)
-                  Padding(padding: EdgeInsets.all(8.0)),
+                  const Padding(padding: EdgeInsets.all(8)),
                 if (_imageAnswerFormat.useGallery)
                   TextButton.icon(
-                      onPressed: _openGallery,
-                      icon: const Icon(
-                        Icons.collections,
-                        size: 30,
-                      ),
-                      label: Text(
-                        'Galeria',
-                        style: TextStyle(fontSize: 20),
-                      ))
+                    onPressed: _openGallery,
+                    icon: const Icon(
+                      Icons.collections,
+                      size: 30,
+                    ),
+                    label: const Text(
+                      'Galeria',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -193,37 +195,68 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   }
 
   Future<void> _openCamera() async {
-    var picture = await _picker.pickImage(
-      preferredCameraDevice: CameraDevice.rear,
-      source: ImageSource.camera,
-    );
+    final crashlytics = FirebaseCrashlytics.instance;
 
-    if (picture != null) Navigator.of(context).pop();
+    crashlytics.setCustomKey('img_src', 'CAMERA');
 
-    setState(() {
-      if (picture != null && picture.path.isNotEmpty) filePath = picture.path;
+    try {
+      await crashlytics.log('Opening camera image picker');
 
-      if (filePath.isNotEmpty) {
-        _isValid = true;
-      }
-    });
-  }
+      final picture = await _picker.pickImage(
+        source: ImageSource.camera,
+      );
 
-  Future<void> _openGallery() async {
-    var picture = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    Navigator.of(context).pop();
-
-    picture?.readAsBytes().then((value) {
       setState(() {
-        filePath = picture.path;
+        if (picture != null && picture.path.isNotEmpty) filePath = picture.path;
 
         if (filePath.isNotEmpty) {
           _isValid = true;
         }
       });
-    });
+
+      if (picture != null) Navigator.of(context).pop();
+
+      await crashlytics.log('Camera image picker successfully opened');
+    } catch (err, stacktrace) {
+      print('CATCH CAMERA');
+      final status = await Permission.camera.status;
+      crashlytics.setCustomKey('camera_permission', status.toString());
+      // Logar exceção caso ocorra um erro ao abrir a câmera
+      await crashlytics.recordError(err, stacktrace,
+          reason: 'Image picker error');
+    }
+  }
+
+  Future<void> _openGallery() async {
+    final crashlytics = FirebaseCrashlytics.instance;
+
+    crashlytics.setCustomKey('img_src', 'GALLERY');
+
+    try {
+      await crashlytics.log('Opening gallery image picker');
+
+      final picture = await _picker.pickImage(
+        source: ImageSource.gallery,
+      );
+
+      await picture?.readAsBytes().then((value) {
+        setState(() {
+          filePath = picture.path;
+
+          if (filePath.isNotEmpty) {
+            _isValid = true;
+          }
+        });
+
+        Navigator.of(context).pop();
+      });
+      await crashlytics.log('Gallery image picker successfully opened');
+    } catch (err, stacktrace) {
+      final status = await Permission.photos.status;
+      crashlytics.setCustomKey('camera_permission', status.toString());
+      // Logar exceção caso ocorra um erro ao abrir a câmera
+      await crashlytics.recordError(err, stacktrace,
+          reason: 'Image picker error');
+    }
   }
 }

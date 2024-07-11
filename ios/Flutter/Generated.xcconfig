@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/home/kvarzsiev/fvm/versions/3.13.9
-FLUTTER_APPLICATION_PATH=/home/kvarzsiev/Git/SIM/mono-simplifica/app-simplifica/packages/survey_kit
+FLUTTER_ROOT=/home/enzob/.asdf/installs/flutter/3.13.9-stable
+FLUTTER_APPLICATION_PATH=/home/enzob/Git/SIM/mono-simplifica/app-simplifica/packages/survey_kit
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_TARGET=lib/main.dart
 FLUTTER_BUILD_DIR=build
