@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +9,7 @@ import 'package:survey_kit/src/answer_format/image_answer_format.dart';
 import 'package:survey_kit/src/result/question/image_question_result.dart';
 import 'package:survey_kit/src/steps/predefined_steps/question_step.dart';
 import 'package:survey_kit/src/views/widget/step_view.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ImageAnswerView extends StatefulWidget {
   const ImageAnswerView({
@@ -151,7 +155,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
                             actions: [
                               TextButton(
                                 onPressed: () async {
-                                  await _openCamera();
+                                  await _openCamera(context);
                                 },
                                 child: const Text('Abrir câmera'),
                               ),
@@ -159,7 +163,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
                           ),
                         );
                       } else {
-                        _openCamera();
+                        _openCamera(context);
                       }
                     },
                     icon: const Icon(
@@ -194,7 +198,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
     );
   }
 
-  Future<void> _openCamera() async {
+  Future<void> _openCamera(BuildContext context) async {
     final crashlytics = FirebaseCrashlytics.instance;
 
     crashlytics.setCustomKey('img_src', 'CAMERA');
@@ -202,21 +206,73 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
     try {
       await crashlytics.log('Opening camera image picker');
 
-      final picture = await _picker.pickImage(
-        source: ImageSource.camera,
-      );
+      await showDialog(
+          context: context,
+          useRootNavigator: false,
+          builder: (BuildContext contextDialog) => SizedBox(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: CameraAwesomeBuilder.custom(
+                  enablePhysicalButton: true,
+                  builder: (state, preview) {
+                    state.captureState$.listen(
+                      (event) {
+                        if (event?.status == MediaCaptureStatus.success) {
+                          event?.captureRequest.when(single: (single) async {
+                            if (single.file?.path != null) {
+                              // final picture = await _picker.pickImage(
+                              //   source: ImageSource.camera,
+                              // );
+                              //
+                              setState(() {
+                                filePath = single.file!.path;
+                                // if (picture != null && picture.path.isNotEmpty)
+                                //   filePath = picture.path;
 
-      setState(() {
-        if (picture != null && picture.path.isNotEmpty) filePath = picture.path;
+                                // if (filePath.isNotEmpty) {
+                                _isValid = true;
+                                // }
+                              });
 
-        if (filePath.isNotEmpty) {
-          _isValid = true;
-        }
-      });
+                              // if (picture != null)
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
 
-      if (picture != null) Navigator.of(context).pop();
+                              final file = File(single.file!.path);
+                              if (!await file.exists()) {
+                                throw Exception('Erro ao bater foto');
+                              }
+                            }
+                          });
+                        }
+                      },
+                    );
 
-      await crashlytics.log('Camera image picker successfully opened');
+                    return AwesomeCameraLayout(
+                      state: state,
+                      topActions: const SizedBox.shrink(),
+                      middleContent: const SizedBox.shrink(),
+                    );
+                  },
+                  saveConfig: SaveConfig.photo(
+                    pathBuilder: (sensors) async {
+                      final Directory extDir = await getTemporaryDirectory();
+                      final testDir = await Directory(
+                        '${extDir.path}/camerawesome',
+                      ).create(recursive: true);
+                      final String afilePath =
+                          '${testDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+                      await crashlytics
+                          .log('Camera image picker successfully opened');
+
+                      return SingleCaptureRequest(afilePath, sensors.first);
+                    },
+                  ),
+                  sensorConfig: SensorConfig.single(
+                      sensor: Sensor.position(SensorPosition.back)),
+                ),
+              ));
     } catch (err, stacktrace) {
       print('CATCH CAMERA');
       final status = await Permission.camera.status;
