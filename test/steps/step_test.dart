@@ -18,7 +18,8 @@ void main() {
       "buttonText": "Let's go!"
     }
     ''';
-    final jsonStep = Step.fromJson(json.decode(jsonStr));
+    final jsonStep =
+        Step.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
     final step = InstructionStep(
       stepIdentifier: StepIdentifier(id: "1"),
       title: 'Welcome to the\nQuickBird Studios\nHealth Survey',
@@ -41,6 +42,7 @@ void main() {
       "buttonText": "Let's go!"
     }
     ''';
-    expect(() => Step.fromJson(json.decode(jsonStr)), throwsException);
+    expect(() => Step.fromJson(json.decode(jsonStr) as Map<String, dynamic>),
+        throwsException);
   });
 }

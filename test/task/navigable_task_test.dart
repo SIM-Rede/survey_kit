@@ -43,7 +43,8 @@ void main() {
       ),
     );
 
-    final navigableJsonTask = NavigableTask.fromJson(json.decode(jsonStr));
+    final navigableJsonTask =
+        NavigableTask.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
 
     expect(navigableJsonTask, navigableTask);
   });

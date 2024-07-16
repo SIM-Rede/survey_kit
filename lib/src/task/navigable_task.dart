@@ -46,7 +46,8 @@ class NavigableTask extends Task {
       final rules = json['rules'] as List;
       rules.forEach((rule) {
         navigationRules.putIfAbsent(
-            StepIdentifier.fromJson(rule['triggerStepIdentifier']),
+            StepIdentifier.fromJson(
+                rule['triggerStepIdentifier'] as Map<String, dynamic>),
             () => NavigationRule.fromJson(rule as Map<String, dynamic>));
       });
     }

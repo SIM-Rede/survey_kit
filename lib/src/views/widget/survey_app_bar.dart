@@ -1,37 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:survey_kit/src/configuration/app_bar_configuration.dart';
-import 'package:survey_kit/src/controller/survey_controller.dart';
-import 'package:survey_kit/src/widget/survey_progress.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:survey_kit/survey_kit.dart';
 
-class SurveyAppBar extends StatelessWidget {
-  final AppBarConfiguration appBarConfiguration;
-  final SurveyController? controller;
-
+class SurveyAppBar extends StatefulWidget {
   const SurveyAppBar({
+    super.key,
     required this.appBarConfiguration,
     this.controller,
   });
+  final AppBarConfiguration appBarConfiguration;
+  final SurveyController? controller;
 
   @override
-  AppBar build(BuildContext context) {
-    final _showProgress = appBarConfiguration.showProgress ?? context.read<bool>();
-    final _canGoBack = appBarConfiguration.canBack ?? true;
+  State<SurveyAppBar> createState() => _SurveyAppBarState();
+}
 
-    final surveyController = controller ?? context.read<SurveyController>();
+class _SurveyAppBarState extends State<SurveyAppBar> {
+  @override
+  AppBar build(BuildContext context) {
+    final _showProgress =
+        widget.appBarConfiguration.showProgress ?? context.read<bool>();
+    final _canGoBack = widget.appBarConfiguration.canBack ?? true;
+
+    final surveyController =
+        widget.controller ?? context.read<SurveyController>();
     return AppBar(
       elevation: 0,
       leading: _canGoBack
-          ? appBarConfiguration.leading ??
-              BackButton(
-                onPressed: () {
-                  surveyController.stepBack(
-                    context: context,
-                  );
-                },
-              )
-          : Container(),
-      title: _showProgress ? SurveyProgress() : SizedBox.shrink(),
+          ? BlocBuilder<SurveyPresenter, SurveyState>(
+              builder: (context, state) {
+                if (state is PresentingSurveyState &&
+                    state.currentStepIndex > 0) {
+                  return widget.appBarConfiguration.leading ??
+                      BackButton(
+                        onPressed: () {
+                          surveyController.stepBack(
+                            context: context,
+                          );
+                        },
+                      );
+                } else {
+                  return const SizedBox.shrink();
+                }
+              },
+            )
+          : const SizedBox.shrink(),
+      title: _showProgress ? const SurveyProgress() : const SizedBox.shrink(),
     );
   }
 }
