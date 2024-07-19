@@ -4,12 +4,12 @@ import 'package:camerawesome/camerawesome_plugin.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:survey_kit/src/answer_format/image_answer_format.dart';
 import 'package:survey_kit/src/result/question/image_question_result.dart';
 import 'package:survey_kit/src/steps/predefined_steps/question_step.dart';
 import 'package:survey_kit/src/views/widget/step_view.dart';
-import 'package:path_provider/path_provider.dart';
 
 class ImageAnswerView extends StatefulWidget {
   const ImageAnswerView({
@@ -46,7 +46,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   }
 
   Future<void> _retrieveLostData() async {
-    final LostDataResponse response = await _picker.retrieveLostData();
+    final response = await _picker.retrieveLostData();
 
     if (response.isEmpty) {
       return;
@@ -142,7 +142,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
                     onPressed: () {
                       if (_imageAnswerFormat.hintImage != null &&
                           _imageAnswerFormat.hintTitle != null) {
-                        showDialog(
+                        showDialog<void>(
                           context: context,
                           builder: (context) => AlertDialog(
                             title: Text(
@@ -201,92 +201,109 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   Future<void> _openCamera(BuildContext context) async {
     final crashlytics = FirebaseCrashlytics.instance;
 
-    crashlytics.setCustomKey('img_src', 'CAMERA');
+    await crashlytics.setCustomKey('img_src', 'CAMERA');
 
     try {
       await crashlytics.log('Opening camera image picker');
 
-      await showDialog(
-          context: context,
-          useRootNavigator: false,
-          builder: (BuildContext contextDialog) => SizedBox(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                child: CameraAwesomeBuilder.custom(
-                  enablePhysicalButton: true,
-                  builder: (state, preview) {
-                    state.captureState$.listen(
-                      (event) {
-                        if (event?.status == MediaCaptureStatus.success) {
-                          event?.captureRequest.when(single: (single) async {
-                            if (single.file?.path != null) {
-                              // final picture = await _picker.pickImage(
-                              //   source: ImageSource.camera,
-                              // );
-                              //
-                              setState(() {
-                                filePath = single.file!.path;
-                                // if (picture != null && picture.path.isNotEmpty)
-                                //   filePath = picture.path;
+      // Original Camera implementation
+      //final picture = await _picker.pickImage(
+      //  source: ImageSource.gallery,
+      //);
+      //
+      //await picture?.readAsBytes().then((value) {
+      //  setState(() {
+      //    filePath = picture.path;
+      //
+      //    if (filePath.isNotEmpty) {
+      //      _isValid = true;
+      //    }
+      //  });
+      //
+      //  Navigator.of(context).pop();
+      //});
 
-                                // if (filePath.isNotEmpty) {
-                                _isValid = true;
-                                // }
-                              });
+      // New Camera implementation using awesome camera
+      // ignore: use_build_context_synchronously
+      await showDialog<void>(
+        context: context,
+        useRootNavigator: false,
+        builder: (BuildContext contextDialog) => CameraAwesomeBuilder.custom(
+          enablePhysicalButton: true,
+          builder: (state, preview) {
+            state.captureState$.listen(
+              (event) {
+                if (event?.status == MediaCaptureStatus.success) {
+                  event?.captureRequest.when(
+                    single: (single) async {
+                      if (single.file?.path != null) {
+                        setState(() {
+                          filePath = single.file!.path;
+                          _isValid = true;
+                        });
 
-                              // if (picture != null)
-                              Navigator.of(context).pop();
-                              Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
 
-                              final file = File(single.file!.path);
-                              if (!await file.exists()) {
-                                throw Exception('Erro ao bater foto');
-                              }
-                            }
-                          });
+                        final file = File(single.file!.path);
+                        if (!file.existsSync()) {
+                          throw Exception('Erro ao bater foto');
                         }
-                      },
-                    );
-
-                    return AwesomeCameraLayout(
-                      state: state,
-                      topActions: const SizedBox.shrink(),
-                      middleContent: const SizedBox.shrink(),
-                    );
-                  },
-                  saveConfig: SaveConfig.photo(
-                    pathBuilder: (sensors) async {
-                      final Directory extDir = await getTemporaryDirectory();
-                      final testDir = await Directory(
-                        '${extDir.path}/camerawesome',
-                      ).create(recursive: true);
-                      final String afilePath =
-                          '${testDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-
-                      await crashlytics
-                          .log('Camera image picker successfully opened');
-
-                      return SingleCaptureRequest(afilePath, sensors.first);
+                      }
                     },
-                  ),
-                  sensorConfig: SensorConfig.single(
-                      sensor: Sensor.position(SensorPosition.back)),
-                ),
-              ));
+                  );
+                }
+              },
+            );
+
+            return AwesomeCameraLayout(
+              state: state,
+              topActions: const SizedBox.shrink(),
+              middleContent: const SizedBox.shrink(),
+              bottomActions: AwesomeBottomActions(
+                state: state,
+                left: const SizedBox.shrink(),
+                right: const SizedBox.shrink(),
+              ),
+            );
+          },
+          saveConfig: SaveConfig.photo(
+            pathBuilder: (sensors) async {
+              final extDir = await getTemporaryDirectory();
+              final testDir = await Directory(
+                '${extDir.path}/camerawesome',
+              ).create(recursive: true);
+              final filePath =
+                  '${testDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+              await crashlytics.log('Camera image picker successfully opened');
+
+              return SingleCaptureRequest(filePath, sensors.first);
+            },
+          ),
+          previewFit: CameraPreviewFit.contain,
+          sensorConfig: SensorConfig.single(
+            sensor: Sensor.position(SensorPosition.back),
+            aspectRatio: CameraAspectRatios.ratio_16_9,
+          ),
+        ),
+      );
     } catch (err, stacktrace) {
-      print('CATCH CAMERA');
       final status = await Permission.camera.status;
-      crashlytics.setCustomKey('camera_permission', status.toString());
+      await crashlytics.setCustomKey('camera_permission', status.toString());
       // Logar exceção caso ocorra um erro ao abrir a câmera
-      await crashlytics.recordError(err, stacktrace,
-          reason: 'Image picker error');
+      await crashlytics.recordError(
+        err,
+        stacktrace,
+        reason: 'Awesome Camera error',
+      );
     }
   }
 
   Future<void> _openGallery() async {
     final crashlytics = FirebaseCrashlytics.instance;
 
-    crashlytics.setCustomKey('img_src', 'GALLERY');
+    await crashlytics.setCustomKey('img_src', 'GALLERY');
 
     try {
       await crashlytics.log('Opening gallery image picker');
@@ -309,10 +326,13 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
       await crashlytics.log('Gallery image picker successfully opened');
     } catch (err, stacktrace) {
       final status = await Permission.photos.status;
-      crashlytics.setCustomKey('camera_permission', status.toString());
+      await crashlytics.setCustomKey('camera_permission', status.toString());
       // Logar exceção caso ocorra um erro ao abrir a câmera
-      await crashlytics.recordError(err, stacktrace,
-          reason: 'Image picker error');
+      await crashlytics.recordError(
+        err,
+        stacktrace,
+        reason: 'Image picker error',
+      );
     }
   }
 }
