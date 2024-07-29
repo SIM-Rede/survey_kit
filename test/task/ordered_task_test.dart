@@ -14,7 +14,8 @@ void main() {
     final Task orderedTask =
         OrderedTask(id: TaskIdentifier(id: '123'), steps: []);
 
-    final orderedJsonTask = OrderedTask.fromJson(json.decode(jsonStr));
+    final orderedJsonTask =
+        OrderedTask.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
 
     expect(orderedTask, orderedJsonTask);
   });

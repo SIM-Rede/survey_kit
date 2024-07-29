@@ -71,9 +71,9 @@ class _MultipleDoubleAnswerViewState extends State<MultipleDoubleAnswerView> {
 
   @override
   Widget build(BuildContext context) {
-    CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
+    CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter.currency(
       locale: 'pt_BR',
-      symbol: 'R\$',
+      symbol: r'R$',
     );
 
     return StepView(

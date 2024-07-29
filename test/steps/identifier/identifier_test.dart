@@ -10,7 +10,8 @@ void main() {
         "id":"123"
       }
     ''';
-    final jsonIdentifier = Identifier.fromJson(json.decode(jsonStr));
+    final jsonIdentifier =
+        Identifier.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
     final identifier = Identifier(id: '123');
 
     expect(identifier, jsonIdentifier);

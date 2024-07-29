@@ -1,5 +1,6 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:survey_kit/src/answer_format/double_answer_format.dart';
 import 'package:survey_kit/src/result/question/double_question_result.dart';
 import 'package:survey_kit/src/steps/predefined_steps/question_step.dart';
@@ -28,15 +29,17 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   bool _isValid = false;
   FocusNode inputFocus = FocusNode();
 
-  CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
+  final CurrencyTextInputFormatter _formatter =
+      CurrencyTextInputFormatter.currency(
     locale: 'pt_BR',
-    symbol: 'R\$',
+    symbol: r'R$',
   );
 
   @override
   void initState() {
     super.initState();
-    _doubleAnswerFormat = widget.questionStep.answerFormat as DoubleAnswerFormat;
+    _doubleAnswerFormat =
+        widget.questionStep.answerFormat as DoubleAnswerFormat;
     _controller = TextEditingController();
     _controller.text = widget.result?.valueIdentifier ?? '';
     _checkValidation(_controller.text, _controller.text);
@@ -121,7 +124,8 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
             ),
             controller: _controller,
             onChanged: (String value) {
-              _checkValidation(_formatter.getUnformattedValue().toString(), value);
+              _checkValidation(
+                  _formatter.getUnformattedValue().toString(), value);
             },
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
