@@ -262,7 +262,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
               middleContent: const SizedBox.shrink(),
               bottomActions: AwesomeBottomActions(
                 state: state,
-                left: const SizedBox.shrink(),
+                left: AwesomeFlashButton(state: state),
                 right: const SizedBox.shrink(),
               ),
             );
