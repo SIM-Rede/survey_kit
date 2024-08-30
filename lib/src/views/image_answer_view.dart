@@ -223,7 +223,8 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
       //  Navigator.of(context).pop();
       //});
 
-      // New Camera implementation using awesome camera
+      var control = false;
+      // New Camera implementation using cameraawesome
       // ignore: use_build_context_synchronously
       await showDialog<void>(
         context: context,
@@ -233,21 +234,36 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
           builder: (state, preview) {
             state.captureState$.listen(
               (event) {
-                if (event?.status == MediaCaptureStatus.success) {
+                if (event?.status == MediaCaptureStatus.capturing) {
+                  control = false;
+                }
+                if (event?.status == MediaCaptureStatus.success &&
+                    control == false) {
                   event?.captureRequest.when(
                     single: (single) async {
                       if (single.file?.path != null) {
-                        setState(() {
-                          filePath = single.file!.path;
-                          _isValid = true;
-                        });
-
-                        Navigator.of(context).pop();
-                        Navigator.of(context).pop();
-
                         final file = File(single.file!.path);
-                        if (!file.existsSync()) {
-                          throw Exception('Erro ao bater foto');
+                        final result = await showDialog<bool>(
+                          context: contextDialog,
+                          useRootNavigator: false,
+                          builder: (BuildContext newContext) =>
+                              _picturePreview(file, newContext),
+                        );
+
+                        if (result == true) {
+                          setState(() {
+                            filePath = single.file!.path;
+                            _isValid = true;
+                          });
+
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+
+                          if (!file.existsSync()) {
+                            throw Exception('Erro ao bater foto');
+                          }
+                        } else {
+                          control = true;
                         }
                       }
                     },
@@ -298,6 +314,50 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
         reason: 'Awesome Camera error',
       );
     }
+  }
+
+  Scaffold _picturePreview(File file, BuildContext newContext) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Column(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: Image(image: FileImage(file)),
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(newContext).pop(false);
+                    },
+                    iconSize: 48,
+                    icon: Icon(
+                      Icons.clear,
+                      color: Colors.white,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(newContext).pop(true);
+                    },
+                    iconSize: 48,
+                    icon: Icon(
+                      Icons.check,
+                      color: Colors.white,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Future<void> _openGallery() async {
