@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:survey_kit/src/result/question/boolean_question_result.dart';
 import 'package:survey_kit/src/result/question/date_question_result.dart';
 import 'package:survey_kit/src/result/question/double_question_result.dart';
@@ -124,7 +125,7 @@ class _Converter implements JsonConverter<List<QuestionResult>, Object> {
         qrJson['type'] = (ImageQuestionResult).toString();
         allQuestionResultsEncoded.add(qrJson);
       } else {
-        throw ('Unhandled Question Result Type');
+        _registerLog(qr.toString());
       }
     }
 
@@ -169,10 +170,17 @@ class _Converter implements JsonConverter<List<QuestionResult>, Object> {
       } else if (qType == (ImageQuestionResult).toString()) {
         results.add(ImageQuestionResult.fromJson(qData));
       } else {
-        throw ('Unhandled Question Result Type');
+        _registerLog(qType);
       }
     }
 
     return results;
+  }
+
+  Future<void> _registerLog(String questionType) async {
+    final crashlytics = FirebaseCrashlytics.instance;
+    await crashlytics.setCustomKey('question_type', questionType);
+
+    throw ('Unhandled Question Result Type');
   }
 }
