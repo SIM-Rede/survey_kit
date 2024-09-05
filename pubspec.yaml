@@ -14,7 +14,7 @@ dependencies:
   camerawesome: 2.0.0
   collection: ^1.15.0
   cupertino_icons: ^1.0.2
-  currency_text_input_formatter: ^2.1.10
+  currency_text_input_formatter: ^2.2.0
   equatable: ^2.0.3
   firebase_core: ^2.21.0
   firebase_crashlytics: ^3.4.0

@@ -323,7 +323,10 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
         children: [
           Align(
             alignment: Alignment.topCenter,
-            child: Image(image: FileImage(file)),
+            child: Image(
+                height: MediaQuery.sizeOf(newContext).height * .8,
+                width: MediaQuery.sizeOf(newContext).width * .9,
+                image: FileImage(file)),
           ),
           Expanded(
             child: Align(
