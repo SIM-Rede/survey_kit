@@ -11,8 +11,8 @@ StarQuestionResult _$StarQuestionResultFromJson(Map<String, dynamic> json) =>
       id: Identifier.fromJson(json['id'] as Map<String, dynamic>),
       startDate: DateTime.parse(json['startDate'] as String),
       endDate: DateTime.parse(json['endDate'] as String),
-      valueIdentifier: json['valueIdentifier'] as String,
-      result: json['result'] as int?,
+      valueIdentifier: json['valueIdentifier'] as String?,
+      result: (json['result'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$StarQuestionResultToJson(StarQuestionResult instance) =>
