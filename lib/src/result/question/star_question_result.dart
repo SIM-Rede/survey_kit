@@ -17,7 +17,7 @@ class StarQuestionResult extends QuestionResult<int?> {
           id: id,
           startDate: startDate,
           endDate: endDate,
-          valueIdentifier: valueIdentifier ?? '',
+          valueIdentifier: valueIdentifier ?? '0',
           result: result,
         );
 
