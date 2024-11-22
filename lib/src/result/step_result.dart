@@ -62,67 +62,67 @@ class _Converter implements JsonConverter<List<QuestionResult>, Object> {
     for (QuestionResult qr in questionResults) {
       if (qr is BooleanQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (BooleanQuestionResult).toString();
+        qrJson['type'] = 'BooleanQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is DateQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (DateQuestionResult).toString();
+        qrJson['type'] = 'DateQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is DoubleQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (DoubleQuestionResult).toString();
+        qrJson['type'] = 'DoubleQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is IntegerQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (IntegerQuestionResult).toString();
+        qrJson['type'] = 'IntegerQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is MultipleDoubleQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (MultipleDoubleQuestionResult).toString();
+        qrJson['type'] = 'MultipleDoubleQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is MultipleDoubleQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (MultipleDoubleQuestionResult).toString();
+        qrJson['type'] = 'MultipleDoubleQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is MultipleChoiceQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (MultipleChoiceQuestionResult).toString();
+        qrJson['type'] = 'MultipleChoiceQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is ScaleQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (ScaleQuestionResult).toString();
+        qrJson['type'] = 'ScaleQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is SingleChoiceQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (SingleChoiceQuestionResult).toString();
+        qrJson['type'] = 'SingleChoiceQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is TextQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (TextQuestionResult).toString();
+        qrJson['type'] = 'TextQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is StarQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (StarQuestionResult).toString();
+        qrJson['type'] = 'StarQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is TimeQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (TimeQuestionResult).toString();
+        qrJson['type'] = 'TimeQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is InstructionStepResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (InstructionStepResult).toString();
+        qrJson['type'] = 'InstructionStepResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is CompletionStepResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (CompletionStepResult).toString();
+        qrJson['type'] = 'CompletionStepResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is VideoStepResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (VideoStepResult).toString();
+        qrJson['type'] = 'VideoStepResult';
         allQuestionResultsEncoded.add(qrJson);
       } else if (qr is ImageQuestionResult) {
         final qrJson = qr.toJson();
-        qrJson['type'] = (ImageQuestionResult).toString();
+        qrJson['type'] = 'ImageQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
       } else {
         _registerLog(qr.toString());
@@ -139,35 +139,35 @@ class _Converter implements JsonConverter<List<QuestionResult>, Object> {
       final qData = element as Map<String, dynamic>;
       final qType = qData['type'] as String;
 
-      if (qType == (BooleanQuestionResult).toString()) {
+      if (qType == 'BooleanQuestionResult') {
         results.add(BooleanQuestionResult.fromJson(qData));
-      } else if (qType == (DateQuestionResult).toString()) {
+      } else if (qType == 'DateQuestionResult') {
         results.add(DateQuestionResult.fromJson(qData));
-      } else if (qType == (DoubleQuestionResult).toString()) {
+      } else if (qType == 'DoubleQuestionResult') {
         results.add(DoubleQuestionResult.fromJson(qData));
-      } else if (qType == (IntegerQuestionResult).toString()) {
+      } else if (qType == 'IntegerQuestionResult') {
         results.add(IntegerQuestionResult.fromJson(qData));
-      } else if (qType == (MultipleChoiceQuestionResult).toString()) {
+      } else if (qType == 'MultipleChoiceQuestionResult') {
         results.add(MultipleChoiceQuestionResult.fromJson(qData));
-      } else if (qType == (MultipleDoubleQuestionResult).toString()) {
+      } else if (qType == 'MultipleDoubleQuestionResult') {
         results.add(MultipleDoubleQuestionResult.fromJson(qData));
-      } else if (qType == (ScaleQuestionResult).toString()) {
+      } else if (qType == 'ScaleQuestionResult') {
         results.add(ScaleQuestionResult.fromJson(qData));
-      } else if (qType == (StarQuestionResult).toString()) {
+      } else if (qType == 'StarQuestionResult') {
         results.add(StarQuestionResult.fromJson(qData));
-      } else if (qType == (SingleChoiceQuestionResult).toString()) {
+      } else if (qType == 'SingleChoiceQuestionResult') {
         results.add(SingleChoiceQuestionResult.fromJson(qData));
-      } else if (qType == (TextQuestionResult).toString()) {
+      } else if (qType == 'TextQuestionResult') {
         results.add(TextQuestionResult.fromJson(qData));
-      } else if (qType == (TimeQuestionResult).toString()) {
+      } else if (qType == 'TimeQuestionResult') {
         results.add(TimeQuestionResult.fromJson(qData));
-      } else if (qType == (InstructionStepResult).toString()) {
+      } else if (qType == 'InstructionStepResult') {
         results.add(InstructionStepResult.fromJson(qData));
-      } else if (qType == (CompletionStepResult).toString()) {
+      } else if (qType == 'CompletionStepResult') {
         results.add(CompletionStepResult.fromJson(qData));
-      } else if (qType == (VideoStepResult).toString()) {
+      } else if (qType == 'VideoStepResult') {
         results.add(VideoStepResult.fromJson(qData));
-      } else if (qType == (ImageQuestionResult).toString()) {
+      } else if (qType == 'ImageQuestionResult') {
         results.add(ImageQuestionResult.fromJson(qData));
       } else {
         _registerLog(qType);
