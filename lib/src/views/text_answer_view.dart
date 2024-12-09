@@ -72,7 +72,7 @@ class _TextAnswerViewState extends State<TextAnswerView> {
       title: widget.questionStep.title.isNotEmpty
           ? Text(
               widget.questionStep.title,
-              style: widget.questionStep.title.length > 290
+              style: widget.questionStep.title.length > 270
                   ? Theme.of(context)
                       .textTheme
                       .displayMedium!
