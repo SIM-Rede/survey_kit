@@ -89,7 +89,12 @@ class _MultipleDoubleAnswerViewState extends State<MultipleDoubleAnswerView> {
       title: widget.questionStep.title.isNotEmpty
           ? Text(
               widget.questionStep.title,
-              style: Theme.of(context).textTheme.displayMedium,
+              style: widget.questionStep.title.length > 270
+                  ? Theme.of(context)
+                      .textTheme
+                      .displayMedium!
+                      .copyWith(fontSize: 21)
+                  : Theme.of(context).textTheme.displayMedium,
               textAlign: TextAlign.center,
             )
           : widget.questionStep.content,
