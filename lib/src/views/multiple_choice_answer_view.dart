@@ -53,7 +53,12 @@ class _MultipleChoiceAnswerView extends State<MultipleChoiceAnswerView> {
       title: widget.questionStep.title.isNotEmpty
           ? Text(
               widget.questionStep.title,
-              style: Theme.of(context).textTheme.displayMedium,
+              style: widget.questionStep.title.length > 290
+                  ? Theme.of(context)
+                      .textTheme
+                      .displayMedium!
+                      .copyWith(fontSize: 21)
+                  : Theme.of(context).textTheme.displayMedium,
               textAlign: TextAlign.center,
             )
           : widget.questionStep.content,
@@ -84,7 +89,8 @@ class _MultipleChoiceAnswerView extends State<MultipleChoiceAnswerView> {
                               if (_selectedChoices.contains(tc)) {
                                 _selectedChoices.remove(tc);
                               } else {
-                                if(_multipleChoiceAnswer.maxAnswers > _selectedChoices.length){
+                                if (_multipleChoiceAnswer.maxAnswers >
+                                    _selectedChoices.length) {
                                   _selectedChoices = [..._selectedChoices, tc];
                                 }
                               }
