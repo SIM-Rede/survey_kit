@@ -11,6 +11,7 @@ export 'src/answer_format/multiple_choice_answer_format.dart';
 export 'src/answer_format/multiple_double_answer_format.dart';
 export 'src/answer_format/scale_answer_format.dart';
 export 'src/answer_format/single_choice_answer_format.dart';
+export 'src/answer_format/star_answer_format.dart';
 export 'src/answer_format/text_answer_format.dart';
 export 'src/answer_format/text_choice.dart';
 export 'src/answer_format/time_answer_formart.dart';
