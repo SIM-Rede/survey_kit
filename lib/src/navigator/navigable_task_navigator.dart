@@ -21,12 +21,17 @@ class NavigableTaskNavigator extends TaskNavigator {
     }
     switch (rule.runtimeType) {
       case DirectNavigationRule:
-        return task.steps.firstWhere((element) =>
-            element.stepIdentifier ==
-            (rule as DirectNavigationRule).destinationStepIdentifier);
+        return task.steps.firstWhere(
+          (element) =>
+              element.stepIdentifier ==
+              (rule as DirectNavigationRule).destinationStepIdentifier,
+        );
       case ConditionalNavigationRule:
         return evaluateNextStep(
-            step, rule as ConditionalNavigationRule, questionResult);
+          step,
+          rule as ConditionalNavigationRule,
+          questionResult,
+        );
     }
     return nextInList(step);
   }
@@ -39,13 +44,12 @@ class NavigableTaskNavigator extends TaskNavigator {
     return history.removeLast();
   }
 
-  Step? evaluateNextStep(Step? step, ConditionalNavigationRule rule,
-      QuestionResult? questionResult) {
+  Step? evaluateNextStep(
+    Step? step,
+    ConditionalNavigationRule rule,
+    QuestionResult<dynamic>? questionResult,
+  ) {
     if (questionResult == null) {
-      return nextInList(step);
-    }
-    final result = questionResult.result;
-    if (result == null) {
       return nextInList(step);
     }
     final nextStepIdentifier =
