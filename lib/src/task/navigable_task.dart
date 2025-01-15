@@ -11,18 +11,27 @@ import 'package:survey_kit/src/task/identifier/task_identifier.dart';
 /// [NavigationRule]
 class NavigableTask extends Task {
   final Map<StepIdentifier, NavigationRule> navigationRules;
+  String? _startExecution;
 
   NavigableTask({
     TaskIdentifier? id,
     List<Step> steps = const [],
     Step? initialStep,
     Map<StepIdentifier, NavigationRule>? navigationRules,
-  })  : this.navigationRules = navigationRules ?? {},
+    String? startExecution,
+  })  : _startExecution = startExecution,
+        this.navigationRules = navigationRules ?? {},
         super(
           id: id,
           steps: steps,
           initalStep: initialStep,
         );
+
+  String? get startExecution => _startExecution;
+
+  set startExecution(String? value) {
+    _startExecution = value;
+  }
 
   /// Adds a [NavigationRule] to the [navigationRule] Map
   /// It only adds the [NavigationRule] if none is already set for the
@@ -60,6 +69,7 @@ class NavigableTask extends Task {
               .toList()
           : [],
       navigationRules: navigationRules,
+      startExecution: json['start_execution'] as String?,
     );
   }
 
@@ -67,5 +77,6 @@ class NavigableTask extends Task {
         'id': id.toJson(),
         'steps': steps.map((step) => step.toJson()).toList(),
         'navigationRules': navigationRules,
+        'start_execution': startExecution,
       };
 }

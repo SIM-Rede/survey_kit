@@ -10,6 +10,8 @@ part 'survey_result.g.dart';
 class SurveyResult extends Result {
   final FinishReason finishReason;
   final List<StepResult> results;
+  final DateTime startExecution;
+  final DateTime endExecution;
 
   SurveyResult({
     required Identifier? id,
@@ -17,6 +19,8 @@ class SurveyResult extends Result {
     required DateTime endDate,
     required this.finishReason,
     required this.results,
+    required this.startExecution,
+    required this.endExecution,
   }) : super(id: id, startDate: startDate, endDate: endDate);
   
   factory SurveyResult.fromJson(Map<String, dynamic> json) => _$SurveyResultFromJson(json);
@@ -24,7 +28,7 @@ class SurveyResult extends Result {
   Map<String, dynamic> toJson() => _$SurveyResultToJson(this);
 
   @override
-  List<Object?> get props => [id, startDate, endDate, finishReason];
+  List<Object?> get props => [id, startDate, endDate, finishReason, startExecution, endExecution];
 }
 
 enum FinishReason { SAVED, DISCARDED, COMPLETED, FAILED }
