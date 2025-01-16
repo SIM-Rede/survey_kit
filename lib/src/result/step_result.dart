@@ -2,6 +2,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:survey_kit/src/result/question/boolean_question_result.dart';
 import 'package:survey_kit/src/result/question/date_question_result.dart';
 import 'package:survey_kit/src/result/question/double_question_result.dart';
+import 'package:survey_kit/src/result/question/hand_draw_question_result.dart';
 import 'package:survey_kit/src/result/question/image_question_result.dart';
 import 'package:survey_kit/src/result/question/integer_question_result.dart';
 import 'package:survey_kit/src/result/question/multiple_choice_question_result.dart';
@@ -19,6 +20,7 @@ import 'package:survey_kit/src/steps/identifier/identifier.dart';
 import 'package:survey_kit/src/result/question_result.dart';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:survey_kit/survey_kit.dart';
 
 part 'step_result.g.dart';
 
@@ -124,6 +126,10 @@ class _Converter implements JsonConverter<List<QuestionResult>, Object> {
         final qrJson = qr.toJson();
         qrJson['type'] = 'ImageQuestionResult';
         allQuestionResultsEncoded.add(qrJson);
+      } else if (qr is HandDrawQuestionResult) {
+        final qrJson = qr.toJson();
+        qrJson['type'] = 'HandDrawQuestionResult';
+        allQuestionResultsEncoded.add(qrJson);
       } else {
         _registerLog(qr.toString());
       }
@@ -169,6 +175,8 @@ class _Converter implements JsonConverter<List<QuestionResult>, Object> {
         results.add(VideoStepResult.fromJson(qData));
       } else if (qType == 'ImageQuestionResult') {
         results.add(ImageQuestionResult.fromJson(qData));
+      } else if (qType == 'HandDrawQuestionResult') {
+        results.add(HandDrawQuestionResult.fromJson(qData));
       } else {
         _registerLog(qType);
       }

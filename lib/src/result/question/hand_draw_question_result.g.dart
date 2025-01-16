@@ -1,22 +1,24 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'image_question_result.dart';
+part of 'hand_draw_question_result.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-ImageQuestionResult _$ImageQuestionResultFromJson(Map<String, dynamic> json) =>
-    ImageQuestionResult(
+HandDrawQuestionResult _$HandDrawQuestionResultFromJson(
+        Map<String, dynamic> json) =>
+    HandDrawQuestionResult(
       id: Identifier.fromJson(json['id'] as Map<String, dynamic>),
       startDate: DateTime.parse(json['startDate'] as String),
       endDate: DateTime.parse(json['endDate'] as String),
       valueIdentifier: json['valueIdentifier'] as String,
-      result: json['result'] as String?,
+      result:
+          (json['result'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
 
-Map<String, dynamic> _$ImageQuestionResultToJson(
-        ImageQuestionResult instance) =>
+Map<String, dynamic> _$HandDrawQuestionResultToJson(
+        HandDrawQuestionResult instance) =>
     <String, dynamic>{
       'id': instance.id?.toJson(),
       'startDate': instance.startDate.toIso8601String(),
