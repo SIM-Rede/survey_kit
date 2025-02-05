@@ -78,6 +78,8 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       id: taskNavigator.task.id,
       startDate: startDate,
       endDate: DateTime.now(),
+      startExecution: DateTime.now(),
+      endExecution: DateTime.now(),
       finishReason: FinishReason.COMPLETED,
       results: [],
     );
@@ -160,6 +162,8 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       id: taskNavigator.task.id,
       startDate: startDate,
       endDate: DateTime.now(),
+      startExecution: startDate,
+      endExecution: DateTime.now(),
       finishReason: FinishReason.DISCARDED,
       results: stepResults,
     );
@@ -178,6 +182,8 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       id: taskNavigator.task.id,
       startDate: startDate,
       endDate: DateTime.now(),
+      startExecution: startDate,
+      endExecution: DateTime.now(),
       finishReason: FinishReason.COMPLETED,
       results: stepResults,
     );
