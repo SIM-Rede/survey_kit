@@ -37,6 +37,16 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
     super.initState();
     _retrieveLostData();
     _imageAnswerFormat = widget.questionStep.answerFormat as ImageAnswerFormat;
+
+    final defaultVal = _imageAnswerFormat.defaultValue;
+    if (defaultVal != null) {
+      print('IMAGE VIEW default not null');
+      filePath = defaultVal;
+      setState(() {
+        _isValid = true;
+      });
+    }
+
     _startDate = DateTime.now();
   }
 

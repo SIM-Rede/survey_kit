@@ -17,15 +17,16 @@ class NavigableTask extends Task {
     TaskIdentifier? id,
     List<Step> steps = const [],
     Step? initialStep,
+    StepIdentifier? initialStepIdentifier,
     Map<StepIdentifier, NavigationRule>? navigationRules,
     String? startExecution,
   })  : _startExecution = startExecution,
         this.navigationRules = navigationRules ?? {},
         super(
-          id: id,
-          steps: steps,
-          initalStep: initialStep,
-        );
+            id: id,
+            steps: steps,
+            initalStep: initialStep,
+            initalStepIdentifier: initialStepIdentifier);
 
   String? get startExecution => _startExecution;
 

@@ -22,39 +22,37 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
     required this.taskNavigator,
     required this.onResult,
   }) : super(LoadingSurveyState()) {
-
-    on<StartSurvey>((event, emit){
-      emit(
-        _handleInitialStep()
-      );
+    on<StartSurvey>((event, emit) {
+      emit(_handleInitialStep());
     });
 
-    on<NextStep>((event, emit){
-      if (state is PresentingSurveyState){
+    on<NextStep>((event, emit) {
+      if (state is PresentingSurveyState) {
         emit(_handleNextStep(event, state as PresentingSurveyState));
       }
     });
 
-    on<StepBack>((event, emit){
-      if (state is PresentingSurveyState){
-        emit(
-          _handleStepBack(event, state as PresentingSurveyState)
-        );
+    on<StepBack>((event, emit) {
+      if (state is PresentingSurveyState) {
+        emit(_handleStepBack(event, state as PresentingSurveyState));
       }
     });
 
-    on<CloseSurvey>((event, emit){
-      if (state is PresentingSurveyState){
-        emit(
-          _handleClose(event, state as PresentingSurveyState)
-        );
+    on<CloseSurvey>((event, emit) {
+      if (state is PresentingSurveyState) {
+        emit(_handleClose(event, state as PresentingSurveyState));
+      }
+    });
+
+    on<SaveSurvey>((event, emit) {
+      if (state is PresentingSurveyState) {
+        emit(_handleSave(event, state as PresentingSurveyState));
       }
     });
 
     this.startDate = DateTime.now();
     add(StartSurvey());
   }
-
 
   SurveyState _handleInitialStep() {
     Step? step = taskNavigator.firstStep();
@@ -82,6 +80,7 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       endExecution: DateTime.now(),
       finishReason: FinishReason.COMPLETED,
       results: [],
+      lastQuestionId: taskNavigator.peekHistory()?.stepIdentifier.id,
     );
     return SurveyResultState(
       result: taskResult,
@@ -151,6 +150,30 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
     );
   }
 
+  SurveyState _handleSave(
+      SaveSurvey event, PresentingSurveyState currentState) {
+    _addResult(event.questionResult);
+
+    List<StepResult> stepResults =
+        results.map((e) => StepResult.fromQuestion(questionResult: e)).toList();
+
+    final taskResult = SurveyResult(
+      id: taskNavigator.task.id,
+      startDate: startDate,
+      endDate: DateTime.now(),
+      finishReason: FinishReason.SAVED,
+      results: stepResults,
+      startExecution: startDate,
+      endExecution: DateTime.now(),
+      lastQuestionId: currentState.currentStep.stepIdentifier.id,
+    );
+    return SurveyResultState(
+      result: taskResult,
+      stepResult: currentState.result,
+      currentStep: currentState.currentStep,
+    );
+  }
+
   SurveyState _handleClose(
       CloseSurvey event, PresentingSurveyState currentState) {
     _addResult(event.questionResult);
@@ -166,6 +189,7 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       endExecution: DateTime.now(),
       finishReason: FinishReason.DISCARDED,
       results: stepResults,
+      lastQuestionId: taskNavigator.peekHistory()?.stepIdentifier.id,
     );
     return SurveyResultState(
       result: taskResult,
@@ -186,6 +210,7 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       endExecution: DateTime.now(),
       finishReason: FinishReason.COMPLETED,
       results: stepResults,
+      lastQuestionId: taskNavigator.peekHistory()?.stepIdentifier.id,
     );
     return SurveyResultState(
       result: taskResult,

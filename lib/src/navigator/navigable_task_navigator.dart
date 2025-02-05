@@ -64,8 +64,21 @@ class NavigableTaskNavigator extends TaskNavigator {
   @override
   Step? firstStep() {
     final previousStep = peekHistory();
-    return previousStep == null
-        ? task.initalStep ?? task.steps.first
-        : nextStep(step: previousStep, questionResult: null);
+    if (previousStep != null) {
+      return nextStep(step: previousStep, questionResult: null);
+    } else {
+      if (task.initalStep != null) {
+        return task.initalStep;
+      } else if (task.initalStepIdentifier != null) {
+        for (final step in task.steps) {
+          if (step.stepIdentifier == task.initalStepIdentifier) {
+            return step;
+          } else {
+            record(step);
+          }
+        }
+      }
+    }
+    return task.steps.first;
   }
 }

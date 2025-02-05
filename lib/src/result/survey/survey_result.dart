@@ -12,6 +12,7 @@ class SurveyResult extends Result {
   final List<StepResult> results;
   final DateTime startExecution;
   final DateTime endExecution;
+  final String? lastQuestionId;
 
   SurveyResult({
     required Identifier? id,
@@ -21,14 +22,17 @@ class SurveyResult extends Result {
     required this.results,
     required this.startExecution,
     required this.endExecution,
+    required this.lastQuestionId,
   }) : super(id: id, startDate: startDate, endDate: endDate);
-  
-  factory SurveyResult.fromJson(Map<String, dynamic> json) => _$SurveyResultFromJson(json);
+
+  factory SurveyResult.fromJson(Map<String, dynamic> json) =>
+      _$SurveyResultFromJson(json);
 
   Map<String, dynamic> toJson() => _$SurveyResultToJson(this);
 
   @override
-  List<Object?> get props => [id, startDate, endDate, finishReason, startExecution, endExecution];
+  List<Object?> get props =>
+      [id, startDate, endDate, finishReason, startExecution, endExecution];
 }
 
 enum FinishReason { SAVED, DISCARDED, COMPLETED, FAILED }

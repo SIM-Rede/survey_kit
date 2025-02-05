@@ -23,3 +23,9 @@ class CloseSurvey extends SurveyEvent {
 
   CloseSurvey(this.questionResult);
 }
+
+class SaveSurvey extends SurveyEvent {
+  final QuestionResult? questionResult;
+
+  SaveSurvey(this.questionResult);
+}
