@@ -7,6 +7,9 @@ import 'package:survey_kit/src/presenter/survey_state.dart';
 import 'package:survey_kit/src/result/question_result.dart';
 import 'package:survey_kit/src/result/step_result.dart';
 import 'package:survey_kit/src/result/survey/survey_result.dart';
+import 'package:survey_kit/src/steps/predefined_steps/completion_step.dart';
+import 'package:survey_kit/src/steps/predefined_steps/instruction_step.dart';
+import 'package:survey_kit/src/steps/predefined_steps/question_step.dart';
 import 'package:survey_kit/src/steps/step.dart';
 import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 
@@ -56,6 +59,27 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
 
   SurveyState _handleInitialStep() {
     Step? step = taskNavigator.firstStep();
+
+    // If first step is not the beginning of the survey
+    if (taskNavigator.task.initalStepIdentifier != null) {
+      // adds all results and add previous steps to history
+      for (final step in taskNavigator.task.steps) {
+        if (step is QuestionStep) {
+          _addResult(step.answerFormat.savedResult);
+        } else if (step is InstructionStep) {
+          _addResult(step.result);
+        } else if (step is CompletionStep) {
+          _addResult(step.result);
+        }
+
+        if (step.stepIdentifier.id ==
+            taskNavigator.task.initalStepIdentifier?.id) {
+          break;
+        }
+        taskNavigator.record(step);
+      }
+    }
+
     if (step != null) {
       return PresentingSurveyState(
         currentStep: step,

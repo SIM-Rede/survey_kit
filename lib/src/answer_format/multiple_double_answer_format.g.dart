@@ -9,17 +9,22 @@ part of 'multiple_double_answer_format.dart';
 MultipleDoubleAnswerFormat _$MultipleDoubleAnswerFormatFromJson(
         Map<String, dynamic> json) =>
     MultipleDoubleAnswerFormat(
-      defaultValues: (json['defaultValues'] as List<dynamic>?)
+      defaultValue: (json['defaultValue'] as List<dynamic>?)
           ?.map((e) => MultiDouble.fromJson(e as Map<String, dynamic>))
           .toList(),
       hints:
           (json['hints'] as List<dynamic>?)?.map((e) => e as String).toList() ??
               [],
+      savedResult: json['savedResult'] == null
+          ? null
+          : MultipleDoubleQuestionResult.fromJson(
+              json['savedResult'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$MultipleDoubleAnswerFormatToJson(
         MultipleDoubleAnswerFormat instance) =>
     <String, dynamic>{
-      'defaultValues': instance.defaultValues,
+      'defaultValue': instance.defaultValue,
       'hints': instance.hints,
+      'savedResult': instance.savedResult,
     };

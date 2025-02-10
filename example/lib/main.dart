@@ -230,7 +230,6 @@ class _MyAppState extends State<MyApp> {
               TextChoice(text: 'Yes', value: 'Yes'),
               TextChoice(text: 'No', value: 'No'),
             ],
-            defaultSelection: TextChoice(text: 'No', value: 'No'),
           ),
         ),
         QuestionStep(
@@ -246,7 +245,7 @@ class _MyAppState extends State<MyApp> {
           title: 'When was your last holiday?',
           answerFormat: DateAnswerFormat(
             minDate: DateTime.utc(1970),
-            defaultDate: DateTime.now(),
+            defaultValue: DateTime.now(),
             maxDate: DateTime.now(),
           ),
         ),

@@ -14,11 +14,16 @@ ImageAnswerFormat _$ImageAnswerFormatFromJson(Map<String, dynamic> json) =>
       useGallery: json['useGallery'] as bool? ?? true,
       hintImage: json['hintImage'] as String?,
       hintTitle: json['hintTitle'] as String?,
+      savedResult: json['savedResult'] == null
+          ? null
+          : ImageQuestionResult.fromJson(
+              json['savedResult'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ImageAnswerFormatToJson(ImageAnswerFormat instance) =>
     <String, dynamic>{
       'defaultValue': instance.defaultValue,
+      'savedResult': instance.savedResult,
       'buttonText': instance.buttonText,
       'useCamera': instance.useCamera,
       'useGallery': instance.useGallery,

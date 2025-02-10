@@ -10,10 +10,15 @@ StarAnswerFormat _$StarAnswerFormatFromJson(Map<String, dynamic> json) =>
     StarAnswerFormat(
       defaultValue: (json['defaultValue'] as num?)?.toDouble(),
       hint: json['hint'] as String? ?? '',
+      savedResult: json['savedResult'] == null
+          ? null
+          : StarQuestionResult.fromJson(
+              json['savedResult'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$StarAnswerFormatToJson(StarAnswerFormat instance) =>
     <String, dynamic>{
       'defaultValue': instance.defaultValue,
       'hint': instance.hint,
+      'savedResult': instance.savedResult,
     };

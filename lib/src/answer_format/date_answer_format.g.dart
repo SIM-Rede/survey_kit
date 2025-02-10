@@ -8,20 +8,25 @@ part of 'date_answer_format.dart';
 
 DateAnswerFormat _$DateAnswerFormatFromJson(Map<String, dynamic> json) =>
     DateAnswerFormat(
-      defaultDate: json['defaultDate'] == null
+      defaultValue: json['defaultValue'] == null
           ? null
-          : DateTime.parse(json['defaultDate'] as String),
+          : DateTime.parse(json['defaultValue'] as String),
       minDate: json['minDate'] == null
           ? null
           : DateTime.parse(json['minDate'] as String),
       maxDate: json['maxDate'] == null
           ? null
           : DateTime.parse(json['maxDate'] as String),
+      savedResult: json['savedResult'] == null
+          ? null
+          : DateQuestionResult.fromJson(
+              json['savedResult'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$DateAnswerFormatToJson(DateAnswerFormat instance) =>
     <String, dynamic>{
-      'defaultDate': instance.defaultDate?.toIso8601String(),
+      'defaultValue': instance.defaultValue?.toIso8601String(),
       'minDate': instance.minDate?.toIso8601String(),
       'maxDate': instance.maxDate?.toIso8601String(),
+      'savedResult': instance.savedResult,
     };

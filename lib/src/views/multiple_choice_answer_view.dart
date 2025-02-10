@@ -27,13 +27,16 @@ class _MultipleChoiceAnswerView extends State<MultipleChoiceAnswerView> {
 
   List<TextChoice> _selectedChoices = [];
 
+  bool _changed = false;
+
   @override
   void initState() {
     super.initState();
     _multipleChoiceAnswer =
         widget.questionStep.answerFormat as MultipleChoiceAnswerFormat;
-    _selectedChoices =
-        widget.result?.result ?? _multipleChoiceAnswer.defaultSelection;
+    _selectedChoices = widget.result?.result ??
+        _multipleChoiceAnswer.savedResult?.result ??
+        _multipleChoiceAnswer.defaultValue;
     _startDateTime = DateTime.now();
   }
 
@@ -41,14 +44,20 @@ class _MultipleChoiceAnswerView extends State<MultipleChoiceAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => MultipleChoiceQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDateTime,
-        endDate: DateTime.now(),
-        valueIdentifier:
-            _selectedChoices.map((choices) => choices.value).join(','),
-        result: _selectedChoices,
-      ),
+      resultFunction: () {
+        if (!_changed && _multipleChoiceAnswer.savedResult != null) {
+          return _multipleChoiceAnswer.savedResult!;
+        }
+
+        return MultipleChoiceQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDateTime,
+          endDate: DateTime.now(),
+          valueIdentifier:
+              _selectedChoices.map((choices) => choices.value).join(','),
+          result: _selectedChoices,
+        );
+      },
       isValid: widget.questionStep.isOptional || _selectedChoices.isNotEmpty,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -132,6 +141,7 @@ class _MultipleChoiceAnswerView extends State<MultipleChoiceAnswerView> {
                                     updatedTextChoice;
                               }
                             }
+                            _changed = true;
                           });
                         },
                         decoration: InputDecoration(

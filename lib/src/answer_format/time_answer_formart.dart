@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:survey_kit/src/answer_format/answer_format.dart';
+import 'package:survey_kit/src/result/question/time_question_result.dart';
 
 part 'time_answer_formart.g.dart';
 
@@ -8,9 +9,11 @@ part 'time_answer_formart.g.dart';
 class TimeAnswerFormat implements AnswerFormat {
   @_TimeOfDayJsonConverter()
   final TimeOfDay? defaultValue;
+  final TimeQuestionResult? savedResult;
 
   const TimeAnswerFormat({
     this.defaultValue,
+    this.savedResult,
   }) : super();
 
   factory TimeAnswerFormat.fromJson(Map<String, dynamic> json) =>

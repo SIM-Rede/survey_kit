@@ -8,8 +8,15 @@ part of 'hand_draw_answer_format.dart';
 
 HandDrawAnswerFormat _$HandDrawAnswerFormatFromJson(
         Map<String, dynamic> json) =>
-    HandDrawAnswerFormat();
+    HandDrawAnswerFormat(
+      savedResult: json['savedResult'] == null
+          ? null
+          : HandDrawQuestionResult.fromJson(
+              json['savedResult'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$HandDrawAnswerFormatToJson(
         HandDrawAnswerFormat instance) =>
-    <String, dynamic>{};
+    <String, dynamic>{
+      'savedResult': instance.savedResult,
+    };

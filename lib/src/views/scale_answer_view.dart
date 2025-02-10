@@ -23,11 +23,15 @@ class _ScaleAnswerViewState extends State<ScaleAnswerView> {
   late final ScaleAnswerFormat _scaleAnswerFormat;
   late double _sliderValue;
 
+  bool _changed = false;
+
   @override
   void initState() {
     super.initState();
     _scaleAnswerFormat = widget.questionStep.answerFormat as ScaleAnswerFormat;
-    _sliderValue = widget.result?.result ?? _scaleAnswerFormat.defaultValue;
+    _sliderValue = widget.result?.result ??
+        _scaleAnswerFormat.savedResult?.result ??
+        _scaleAnswerFormat.defaultValue;
     _startDate = DateTime.now();
   }
 
@@ -35,13 +39,19 @@ class _ScaleAnswerViewState extends State<ScaleAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => ScaleQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _sliderValue.toString(),
-        result: _sliderValue,
-      ),
+      resultFunction: () {
+        if (!_changed && _scaleAnswerFormat.savedResult != null) {
+          return _scaleAnswerFormat.savedResult!;
+        }
+
+        return ScaleQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _sliderValue.toString(),
+          result: _sliderValue,
+        );
+      },
       title: widget.questionStep.title.isNotEmpty
           ? Text(
               widget.questionStep.title,
@@ -105,6 +115,7 @@ class _ScaleAnswerViewState extends State<ScaleAnswerView> {
                       onChanged: (double value) {
                         setState(() {
                           _sliderValue = value;
+                          _changed = true;
                         });
                       },
                       min: _scaleAnswerFormat.minimumValue,

@@ -53,7 +53,7 @@ class StepView extends StatelessWidget {
                             context: context, resultFunction: resultFunction),
                         style: ButtonStyle(
                           backgroundColor: WidgetStatePropertyAll(
-                            Colors.grey.withOpacity(.8),
+                            Color(0xFFDADADA),
                           ),
                         ),
                         child: Text(

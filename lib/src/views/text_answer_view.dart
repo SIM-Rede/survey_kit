@@ -25,6 +25,7 @@ class _TextAnswerViewState extends State<TextAnswerView> {
 
   late final TextEditingController _controller;
   bool _isValid = false;
+  bool _changed = false;
   FocusNode inputFocus = FocusNode();
 
   @override
@@ -33,6 +34,9 @@ class _TextAnswerViewState extends State<TextAnswerView> {
     _controller = TextEditingController();
     _controller.text = widget.result?.result ?? '';
     _textAnswerFormat = widget.questionStep.answerFormat as TextAnswerFormat;
+    if (_textAnswerFormat.savedResult != null) {
+      _controller.text = _textAnswerFormat.savedResult?.result ?? '';
+    }
     _checkValidation(_controller.text);
     _startDate = DateTime.now();
 
@@ -62,13 +66,19 @@ class _TextAnswerViewState extends State<TextAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => TextQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _controller.text,
-        result: _controller.text,
-      ),
+      resultFunction: () {
+        if (!_changed && _textAnswerFormat.savedResult != null) {
+          return _textAnswerFormat.savedResult!;
+        }
+
+        return TextQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _controller.text,
+          result: _controller.text,
+        );
+      },
       title: widget.questionStep.title.isNotEmpty
           ? Text(
               widget.questionStep.title,
@@ -107,6 +117,12 @@ class _TextAnswerViewState extends State<TextAnswerView> {
               textAlign: TextAlign.center,
               onChanged: (String text) {
                 _checkValidation(text);
+
+                if (_isValid) {
+                  setState(() {
+                    _changed = true;
+                  });
+                }
               },
             ),
           ),

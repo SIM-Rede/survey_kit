@@ -30,6 +30,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   final ImagePicker _picker = ImagePicker();
 
   bool _isValid = false;
+  bool _changed = false;
   String filePath = '';
 
   @override
@@ -38,10 +39,9 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
     _retrieveLostData();
     _imageAnswerFormat = widget.questionStep.answerFormat as ImageAnswerFormat;
 
-    final defaultVal = _imageAnswerFormat.defaultValue;
-    if (defaultVal != null) {
-      print('IMAGE VIEW default not null');
-      filePath = defaultVal;
+    final savedResult = _imageAnswerFormat.savedResult;
+    if (savedResult != null && savedResult.result != null) {
+      filePath = savedResult.result!;
       setState(() {
         _isValid = true;
       });
@@ -79,13 +79,19 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => ImageQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: filePath,
-        result: filePath,
-      ),
+      resultFunction: () {
+        if (!_changed && _imageAnswerFormat.savedResult != null) {
+          return _imageAnswerFormat.savedResult!;
+        }
+
+        return ImageQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: filePath,
+          result: filePath,
+        );
+      },
       isValid: _isValid || widget.questionStep.isOptional,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -269,6 +275,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
                           setState(() {
                             filePath = single.file!.path;
                             _isValid = true;
+                            _changed = true;
                           });
 
                           Navigator.of(context).pop();
@@ -396,6 +403,7 @@ class _ImageAnswerViewState extends State<ImageAnswerView> {
 
           if (filePath.isNotEmpty) {
             _isValid = true;
+            _changed = true;
           }
         });
 

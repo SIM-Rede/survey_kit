@@ -22,8 +22,27 @@ class OrderedTaskNavigator extends TaskNavigator {
   @override
   Step? firstStep() {
     final previousStep = peekHistory();
-    return previousStep == null
-        ? task.initalStep ?? task.steps.first
-        : nextInList(previousStep);
+
+    if (previousStep != null) {
+      return nextInList(previousStep);
+    } else {
+      if (task.initalStep != null) {
+        return task.initalStep;
+      } else if (task.initalStepIdentifier != null) {
+        Step? returnedStep;
+        for (final step in task.steps) {
+          if (step.stepIdentifier == task.initalStepIdentifier) {
+            returnedStep = step;
+          }
+        }
+        if (returnedStep != null) {
+          return returnedStep;
+        } else {
+          throw new StateError(
+              'Step with provided StepIdentifier was not found.');
+        }
+      }
+    }
+    return task.steps.first;
   }
 }

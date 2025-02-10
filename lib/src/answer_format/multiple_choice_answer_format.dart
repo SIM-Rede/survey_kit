@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:survey_kit/src/answer_format/answer_format.dart';
 import 'package:survey_kit/src/answer_format/text_choice.dart';
+import 'package:survey_kit/src/result/question/multiple_choice_question_result.dart';
 
 part 'multiple_choice_answer_format.g.dart';
 
@@ -8,18 +9,20 @@ part 'multiple_choice_answer_format.g.dart';
 class MultipleChoiceAnswerFormat implements AnswerFormat {
   final List<TextChoice> textChoices;
   @JsonKey(defaultValue: const [])
-  final List<TextChoice> defaultSelection;
+  final List<TextChoice> defaultValue;
+  final MultipleChoiceQuestionResult? savedResult;
   @JsonKey(defaultValue: false)
   final bool otherField;
   @JsonKey(defaultValue: 100)
   final int maxAnswers;
 
-  const MultipleChoiceAnswerFormat({
-    required this.textChoices,
-    this.defaultSelection = const [],
-    this.otherField = false,
-    this.maxAnswers = 100
-  }) : super();
+  const MultipleChoiceAnswerFormat(
+      {required this.textChoices,
+      this.defaultValue = const [],
+      this.otherField = false,
+      this.maxAnswers = 100,
+      this.savedResult})
+      : super();
 
   factory MultipleChoiceAnswerFormat.fromJson(Map<String, dynamic> json) =>
       _$MultipleChoiceAnswerFormatFromJson(json);

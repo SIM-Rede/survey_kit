@@ -28,6 +28,7 @@ void main() {
     startExecution: DateTime(2022, 8, 12, 16, 4),
     endExecution: DateTime(2022, 8, 12, 16, 14),
     finishReason: FinishReason.COMPLETED,
+    lastQuestionId: null,
     results: [
       StepResult(
         id: Identifier(id: 'example1_stepResult'),

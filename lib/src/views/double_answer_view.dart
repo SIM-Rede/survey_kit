@@ -26,6 +26,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   late final DateTime _startDate;
 
   bool _isValid = false;
+  bool _changed = false;
   FocusNode inputFocus = FocusNode();
 
   final CurrencyTextInputFormatter _formatter =
@@ -40,7 +41,9 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
     _doubleAnswerFormat =
         widget.questionStep.answerFormat as DoubleAnswerFormat;
     _controller = TextEditingController();
-    _controller.text = widget.result?.valueIdentifier ?? '';
+    _controller.text = widget.result?.valueIdentifier ??
+        _doubleAnswerFormat.savedResult?.result?.toString() ??
+        '';
     _checkValidation(_controller.text, _controller.text);
     _startDate = DateTime.now();
 
@@ -89,20 +92,26 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => DoubleQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _controller.text,
-        result: double.tryParse(_controller.text
-                .replaceAll('.', '')
-                .replaceAll(',', '.')
-                .replaceAll('R', '')
-                .replaceAll('\$', '')
-                .replaceAll(' ', '')) ??
-            _doubleAnswerFormat.defaultValue ??
-            null,
-      ),
+      resultFunction: () {
+        if (!_changed && _doubleAnswerFormat.savedResult != null) {
+          return _doubleAnswerFormat.savedResult!;
+        }
+
+        return DoubleQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _controller.text,
+          result: double.tryParse(_controller.text
+                  .replaceAll('.', '')
+                  .replaceAll(',', '.')
+                  .replaceAll('R', '')
+                  .replaceAll('\$', '')
+                  .replaceAll(' ', '')) ??
+              _doubleAnswerFormat.defaultValue ??
+              null,
+        );
+      },
       isValid: _isValid || widget.questionStep.isOptional,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -128,6 +137,9 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
             ),
             controller: _controller,
             onChanged: (String value) {
+              setState(() {
+                _changed = true;
+              });
               _checkValidation(
                   _formatter.getUnformattedValue().toString(), value);
             },

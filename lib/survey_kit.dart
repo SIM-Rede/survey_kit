@@ -40,6 +40,7 @@ export 'src/result/question/single_choice_question_result.dart';
 export 'src/result/question/text_question_result.dart';
 export 'src/result/question/time_question_result.dart';
 export 'src/result/question/hand_draw_question_result.dart';
+export 'src/result/question/star_question_result.dart';
 export 'src/result/question_result.dart';
 export 'src/result/result.dart';
 export 'src/result/step/completion_step_result.dart';

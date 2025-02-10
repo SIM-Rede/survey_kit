@@ -24,14 +24,16 @@ class _MultipleChoiceAutoCompleteAnswerViewState
   late final MultipleChoiceAutoCompleteAnswerFormat _multipleChoiceAnswer;
 
   List<TextChoice> _selectedChoices = [];
+  bool _changed = false;
 
   @override
   void initState() {
     super.initState();
     _multipleChoiceAnswer = widget.questionStep.answerFormat
         as MultipleChoiceAutoCompleteAnswerFormat;
-    _selectedChoices =
-        widget.result?.result ?? _multipleChoiceAnswer.defaultSelection;
+    _selectedChoices = widget.result?.result ??
+        _multipleChoiceAnswer.savedResult?.result ??
+        [];
     _startDateTime = DateTime.now();
   }
 
@@ -39,14 +41,20 @@ class _MultipleChoiceAutoCompleteAnswerViewState
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => MultipleChoiceQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDateTime,
-        endDate: DateTime.now(),
-        valueIdentifier:
-            _selectedChoices.map((choices) => choices.value).join(','),
-        result: _selectedChoices,
-      ),
+      resultFunction: () {
+        if (!_changed && _multipleChoiceAnswer.savedResult != null) {
+          return _multipleChoiceAnswer.savedResult!;
+        }
+
+        return MultipleChoiceQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDateTime,
+          endDate: DateTime.now(),
+          valueIdentifier:
+              _selectedChoices.map((choices) => choices.value).join(','),
+          result: _selectedChoices,
+        );
+      },
       isValid: widget.questionStep.isOptional || _selectedChoices.isNotEmpty,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -167,6 +175,8 @@ class _MultipleChoiceAutoCompleteAnswerViewState
         } else {
           _selectedChoices = [..._selectedChoices, tc];
         }
+
+        _changed = true;
       },
     );
   }

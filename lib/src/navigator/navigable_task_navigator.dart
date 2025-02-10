@@ -70,12 +70,17 @@ class NavigableTaskNavigator extends TaskNavigator {
       if (task.initalStep != null) {
         return task.initalStep;
       } else if (task.initalStepIdentifier != null) {
+        Step? returnedStep;
         for (final step in task.steps) {
           if (step.stepIdentifier == task.initalStepIdentifier) {
-            return step;
-          } else {
-            record(step);
+            returnedStep = step;
           }
+        }
+        if (returnedStep != null) {
+          return returnedStep;
+        } else {
+          throw new StateError(
+              'Step with provided StepIdentifier was not found.');
         }
       }
     }

@@ -18,11 +18,13 @@ class InstructionView extends StatelessWidget {
         style: Theme.of(context).textTheme.displayMedium,
         textAlign: TextAlign.center,
       ),
-      resultFunction: () => InstructionStepResult(
-        instructionStep.stepIdentifier,
-        _startDate,
-        DateTime.now(),
-      ),
+      resultFunction: () {
+        return InstructionStepResult(
+          instructionStep.stepIdentifier,
+          _startDate,
+          DateTime.now(),
+        );
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14.0),
         child: Text(

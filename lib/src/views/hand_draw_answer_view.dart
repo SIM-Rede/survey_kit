@@ -25,6 +25,7 @@ class _HandDrawAnswerViewState extends State<HandDrawAnswerView> {
   late final HandDrawAnswerFormat _handDrawAnswerFormat;
   late final DateTime _startDate;
 
+  bool _changed = false;
   bool _isValid = false;
   bool _canSign = false;
   FocusNode inputFocus = FocusNode();
@@ -43,11 +44,23 @@ class _HandDrawAnswerViewState extends State<HandDrawAnswerView> {
     _handDrawAnswerFormat =
         widget.questionStep.answerFormat as HandDrawAnswerFormat;
 
-    if (widget.result != null &&
-        widget.result!.result != null &&
-        widget.result!.result!.isNotEmpty) {
-      _nameController.text = widget.result!.result!.first;
+    if (widget.result != null && widget.result!.result != null) {
+      _nameController.text = widget.result!.result!.name;
     }
+
+    final savedResult = _handDrawAnswerFormat.savedResult;
+    if (savedResult != null && savedResult.result != null) {
+      File file = File(savedResult.result!.signatureImageUrl);
+
+      if (file.existsSync()) {
+        this._resultFile = file;
+      } else {
+        throw StateError('Provided file does not exists');
+      }
+
+      _nameController.text = savedResult.result!.name;
+    }
+
     _checkValidation();
 
     _startDate = DateTime.now();
@@ -78,6 +91,7 @@ class _HandDrawAnswerViewState extends State<HandDrawAnswerView> {
     }
 
     setState(() {
+      _changed = true;
       _canSign = nameHasMatch;
       _isValid = nameHasMatch && signFileExists;
     });
@@ -87,13 +101,22 @@ class _HandDrawAnswerViewState extends State<HandDrawAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => HandDrawQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _nameController.text,
-        result: [_nameController.text, _resultFile!.path],
-      ),
+      resultFunction: () {
+        if (!_changed && _handDrawAnswerFormat.savedResult != null) {
+          return _handDrawAnswerFormat.savedResult!;
+        }
+
+        return HandDrawQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _nameController.text,
+          result: HandDrawQuestionSignatureResult(
+            name: _nameController.text,
+            signatureImageUrl: _resultFile!.path,
+          ),
+        );
+      },
       isValid: _isValid || widget.questionStep.isOptional,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
