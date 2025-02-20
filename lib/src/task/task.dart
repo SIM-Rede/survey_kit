@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 import 'package:survey_kit/src/steps/step.dart';
 import 'package:survey_kit/src/task/identifier/task_identifier.dart';
 import 'package:survey_kit/src/task/navigable_task.dart';
@@ -15,11 +16,13 @@ abstract class Task {
   @JsonKey(defaultValue: [])
   final List<Step> steps;
   final Step? initalStep;
+  final StepIdentifier? initalStepIdentifier;
 
   Task({
     TaskIdentifier? id,
     this.steps = const [],
     this.initalStep,
+    this.initalStepIdentifier,
   }) {
     if (id == null) {
       id = TaskIdentifier();

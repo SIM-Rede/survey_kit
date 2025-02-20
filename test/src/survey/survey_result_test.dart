@@ -25,7 +25,10 @@ void main() {
     id: Identifier(id: 'example1'),
     startDate: DateTime(2022, 8, 12, 16, 4),
     endDate: DateTime(2022, 8, 12, 16, 14),
+    startExecution: DateTime(2022, 8, 12, 16, 4),
+    endExecution: DateTime(2022, 8, 12, 16, 14),
     finishReason: FinishReason.COMPLETED,
+    lastQuestionId: null,
     results: [
       StepResult(
         id: Identifier(id: 'example1_stepResult'),

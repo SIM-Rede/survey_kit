@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:survey_kit/src/result/question_result.dart';
+import 'package:survey_kit/src/result/step/instruction_step_result.dart';
 import 'package:survey_kit/src/steps/step.dart';
 import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 import 'package:survey_kit/src/views/instruction_view.dart';
@@ -11,10 +12,12 @@ part 'instruction_step.g.dart';
 class InstructionStep extends Step {
   final String title;
   final String text;
+  final InstructionStepResult? result;
 
   InstructionStep({
     required this.title,
     required this.text,
+    this.result,
     bool isOptional = false,
     String buttonText = 'Next',
     StepIdentifier? stepIdentifier,

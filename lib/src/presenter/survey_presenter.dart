@@ -7,6 +7,9 @@ import 'package:survey_kit/src/presenter/survey_state.dart';
 import 'package:survey_kit/src/result/question_result.dart';
 import 'package:survey_kit/src/result/step_result.dart';
 import 'package:survey_kit/src/result/survey/survey_result.dart';
+import 'package:survey_kit/src/steps/predefined_steps/completion_step.dart';
+import 'package:survey_kit/src/steps/predefined_steps/instruction_step.dart';
+import 'package:survey_kit/src/steps/predefined_steps/question_step.dart';
 import 'package:survey_kit/src/steps/step.dart';
 import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 
@@ -22,32 +25,31 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
     required this.taskNavigator,
     required this.onResult,
   }) : super(LoadingSurveyState()) {
-
-    on<StartSurvey>((event, emit){
-      emit(
-        _handleInitialStep()
-      );
+    on<StartSurvey>((event, emit) {
+      emit(_handleInitialStep());
     });
 
-    on<NextStep>((event, emit){
-      if (state is PresentingSurveyState){
+    on<NextStep>((event, emit) {
+      if (state is PresentingSurveyState) {
         emit(_handleNextStep(event, state as PresentingSurveyState));
       }
     });
 
-    on<StepBack>((event, emit){
-      if (state is PresentingSurveyState){
-        emit(
-          _handleStepBack(event, state as PresentingSurveyState)
-        );
+    on<StepBack>((event, emit) {
+      if (state is PresentingSurveyState) {
+        emit(_handleStepBack(event, state as PresentingSurveyState));
       }
     });
 
-    on<CloseSurvey>((event, emit){
-      if (state is PresentingSurveyState){
-        emit(
-          _handleClose(event, state as PresentingSurveyState)
-        );
+    on<CloseSurvey>((event, emit) {
+      if (state is PresentingSurveyState) {
+        emit(_handleClose(event, state as PresentingSurveyState));
+      }
+    });
+
+    on<SaveSurvey>((event, emit) {
+      if (state is PresentingSurveyState) {
+        emit(_handleSave(event, state as PresentingSurveyState));
       }
     });
 
@@ -55,9 +57,29 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
     add(StartSurvey());
   }
 
-
   SurveyState _handleInitialStep() {
     Step? step = taskNavigator.firstStep();
+
+    // If first step is not the beginning of the survey
+    if (taskNavigator.task.initalStepIdentifier != null) {
+      // adds all results and add previous steps to history
+      for (final step in taskNavigator.task.steps) {
+        if (step is QuestionStep) {
+          _addResult(step.answerFormat.savedResult);
+        } else if (step is InstructionStep) {
+          _addResult(step.result);
+        } else if (step is CompletionStep) {
+          _addResult(step.result);
+        }
+
+        if (step.stepIdentifier.id ==
+            taskNavigator.task.initalStepIdentifier?.id) {
+          break;
+        }
+        taskNavigator.record(step);
+      }
+    }
+
     if (step != null) {
       return PresentingSurveyState(
         currentStep: step,
@@ -82,6 +104,7 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       endExecution: DateTime.now(),
       finishReason: FinishReason.COMPLETED,
       results: [],
+      lastQuestionId: taskNavigator.peekHistory()?.stepIdentifier.id,
     );
     return SurveyResultState(
       result: taskResult,
@@ -151,6 +174,30 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
     );
   }
 
+  SurveyState _handleSave(
+      SaveSurvey event, PresentingSurveyState currentState) {
+    _addResult(event.questionResult);
+
+    List<StepResult> stepResults =
+        results.map((e) => StepResult.fromQuestion(questionResult: e)).toList();
+
+    final taskResult = SurveyResult(
+      id: taskNavigator.task.id,
+      startDate: startDate,
+      endDate: DateTime.now(),
+      finishReason: FinishReason.SAVED,
+      results: stepResults,
+      startExecution: startDate,
+      endExecution: DateTime.now(),
+      lastQuestionId: currentState.currentStep.stepIdentifier.id,
+    );
+    return SurveyResultState(
+      result: taskResult,
+      stepResult: currentState.result,
+      currentStep: currentState.currentStep,
+    );
+  }
+
   SurveyState _handleClose(
       CloseSurvey event, PresentingSurveyState currentState) {
     _addResult(event.questionResult);
@@ -166,6 +213,7 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       endExecution: DateTime.now(),
       finishReason: FinishReason.DISCARDED,
       results: stepResults,
+      lastQuestionId: taskNavigator.peekHistory()?.stepIdentifier.id,
     );
     return SurveyResultState(
       result: taskResult,
@@ -186,6 +234,7 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       endExecution: DateTime.now(),
       finishReason: FinishReason.COMPLETED,
       results: stepResults,
+      lastQuestionId: taskNavigator.peekHistory()?.stepIdentifier.id,
     );
     return SurveyResultState(
       result: taskResult,

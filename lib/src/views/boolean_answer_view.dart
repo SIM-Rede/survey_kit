@@ -23,12 +23,15 @@ class _BooleanAnswerViewState extends State<BooleanAnswerView> {
   late final BooleanAnswerFormat _answerFormat;
   late final DateTime _startDate;
   BooleanResult? _result;
+  bool _changed = false;
 
   @override
   void initState() {
     super.initState();
     _answerFormat = widget.questionStep.answerFormat as BooleanAnswerFormat;
-    _result = widget.result?.result ?? _answerFormat.result;
+    _result = widget.result?.result ??
+        _answerFormat.savedResult?.result ??
+        _answerFormat.result;
     _startDate = DateTime.now();
   }
 
@@ -36,17 +39,23 @@ class _BooleanAnswerViewState extends State<BooleanAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => BooleanQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _result == BooleanResult.POSITIVE
-            ? _answerFormat.positiveAnswer
-            : _result == BooleanResult.NEGATIVE
-                ? _answerFormat.negativeAnswer
-                : '',
-        result: _result,
-      ),
+      resultFunction: () {
+        if (!_changed && _answerFormat.savedResult != null) {
+          return _answerFormat.savedResult!;
+        }
+
+        return BooleanQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _result == BooleanResult.POSITIVE
+              ? _answerFormat.positiveAnswer
+              : _result == BooleanResult.NEGATIVE
+                  ? _answerFormat.negativeAnswer
+                  : '',
+          result: _result,
+        );
+      },
       title: widget.questionStep.title.isNotEmpty
           ? Text(
               widget.questionStep.title,
@@ -84,7 +93,9 @@ class _BooleanAnswerViewState extends State<BooleanAnswerView> {
                   } else {
                     _result = BooleanResult.POSITIVE;
                   }
-                  setState(() {});
+                  setState(() {
+                    _changed = true;
+                  });
                 },
                 isSelected: _result == BooleanResult.POSITIVE,
               ),
@@ -96,7 +107,9 @@ class _BooleanAnswerViewState extends State<BooleanAnswerView> {
                   } else {
                     _result = BooleanResult.NEGATIVE;
                   }
-                  setState(() {});
+                  setState(() {
+                    _changed = true;
+                  });
                 },
                 isSelected: _result == BooleanResult.NEGATIVE,
               ),

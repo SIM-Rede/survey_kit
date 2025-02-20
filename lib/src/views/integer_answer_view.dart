@@ -24,6 +24,7 @@ class _IntegerAnswerViewState extends State<IntegerAnswerView> {
   late final TextEditingController _controller;
   late final DateTime _startDate;
 
+  bool _changed = false;
   bool _isValid = false;
   FocusNode inputFocus = FocusNode();
 
@@ -33,7 +34,9 @@ class _IntegerAnswerViewState extends State<IntegerAnswerView> {
     _integerAnswerFormat =
         widget.questionStep.answerFormat as IntegerAnswerFormat;
     _controller = TextEditingController();
-    _controller.text = widget.result?.result?.toString() ?? '';
+    _controller.text = widget.result?.result?.toString() ??
+        _integerAnswerFormat.savedResult?.result?.toString() ??
+        '';
     _checkValidation(_controller.text);
     _startDate = DateTime.now();
 
@@ -51,6 +54,7 @@ class _IntegerAnswerViewState extends State<IntegerAnswerView> {
   void _checkValidation(String text) {
     setState(() {
       _isValid = text.isNotEmpty && int.tryParse(text) != null;
+      if (_isValid) _changed = true;
     });
   }
 
@@ -58,15 +62,21 @@ class _IntegerAnswerViewState extends State<IntegerAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => IntegerQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _controller.text,
-        result: int.tryParse(_controller.text) ??
-            _integerAnswerFormat.defaultValue ??
-            null,
-      ),
+      resultFunction: () {
+        if (!_changed && _integerAnswerFormat.savedResult != null) {
+          return _integerAnswerFormat.savedResult!;
+        }
+
+        return IntegerQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _controller.text,
+          result: int.tryParse(_controller.text) ??
+              _integerAnswerFormat.defaultValue ??
+              null,
+        );
+      },
       isValid: _isValid || widget.questionStep.isOptional,
       title: widget.questionStep.title.isNotEmpty
           ? Text(

@@ -13,7 +13,7 @@ MultipleChoiceAutoCompleteAnswerFormat
           textChoices: (json['textChoices'] as List<dynamic>)
               .map((e) => TextChoice.fromJson(e as Map<String, dynamic>))
               .toList(),
-          defaultSelection: (json['defaultSelection'] as List<dynamic>?)
+          defaultValue: (json['defaultValue'] as List<dynamic>?)
                   ?.map((e) => TextChoice.fromJson(e as Map<String, dynamic>))
                   .toList() ??
               [],
@@ -22,13 +22,18 @@ MultipleChoiceAutoCompleteAnswerFormat
                   .toList() ??
               [],
           otherField: json['otherField'] as bool? ?? false,
+          savedResult: json['savedResult'] == null
+              ? null
+              : MultipleChoiceQuestionResult.fromJson(
+                  json['savedResult'] as Map<String, dynamic>),
         );
 
 Map<String, dynamic> _$MultipleChoiceAutoCompleteAnswerFormatToJson(
         MultipleChoiceAutoCompleteAnswerFormat instance) =>
     <String, dynamic>{
       'textChoices': instance.textChoices,
-      'defaultSelection': instance.defaultSelection,
+      'defaultValue': instance.defaultValue,
+      'savedResult': instance.savedResult,
       'suggestions': instance.suggestions,
       'otherField': instance.otherField,
     };

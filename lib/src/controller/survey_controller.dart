@@ -50,10 +50,26 @@ class SurveyController {
     QuestionResult Function()? resultFunction,
   )? onCloseSurvey;
 
+  /// Defines what should happen if the survey should be saved (for after)
+  ///
+  /// If the function returns `true`, the default behavior will still be executed after it.
+  ///
+  /// Parameters:
+  /// - [context]: The build context of the widget triggering the next step.
+  /// - [resultFunction]: A function that returns a [QuestionResult] object.
+  ///
+  /// Returns:
+  /// - `true` if the default behavior should still be executed after this function, `false` otherwise.
+  final bool Function(
+    BuildContext context,
+    QuestionResult Function()? resultFunction,
+  )? onSaveSurvey;
+
   SurveyController({
     this.onNextStep,
     this.onStepBack,
     this.onCloseSurvey,
+    this.onSaveSurvey,
   });
 
   void nextStep(
@@ -93,6 +109,20 @@ class SurveyController {
     }
     BlocProvider.of<SurveyPresenter>(context).add(
       CloseSurvey(
+        resultFunction != null ? resultFunction.call() : null,
+      ),
+    );
+  }
+
+  void saveSurvey({
+    required BuildContext context,
+    QuestionResult Function()? resultFunction,
+  }) {
+    if (onSaveSurvey != null) {
+      if (!onSaveSurvey!(context, resultFunction)) return;
+    }
+    BlocProvider.of<SurveyPresenter>(context).add(
+      SaveSurvey(
         resultFunction != null ? resultFunction.call() : null,
       ),
     );

@@ -29,31 +29,41 @@ class _DateAnswerViewState extends State<DateAnswerView> {
   final DateTime _startDate = DateTime.now();
   late DateAnswerFormat _dateAnswerFormat;
   DateTime? _result;
+  bool _changed = false;
 
   @override
   void initState() {
     super.initState();
     _dateAnswerFormat = widget.questionStep.answerFormat as DateAnswerFormat;
     _result = widget.result?.result ??
-        _dateAnswerFormat.defaultDate ??
+        _dateAnswerFormat.savedResult?.result ??
         DateTime.now();
   }
 
   void _handleDateChanged(DateTime date) {
-    setState(() => _result = date);
+    setState(() {
+      _result = date;
+      _changed = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => DateQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _result?.toIso8601String() ?? 'none',
-        result: _result,
-      ),
+      resultFunction: () {
+        if (!_changed && _dateAnswerFormat.savedResult != null) {
+          return _dateAnswerFormat.savedResult!;
+        }
+
+        return DateQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _result?.toIso8601String() ?? 'none',
+          result: _result,
+        );
+      },
       isValid: widget.questionStep.isOptional || _result != null,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -147,7 +157,7 @@ class _DateAnswerViewState extends State<DateAnswerView> {
             DateTime.now().add(
               Duration(hours: 1),
             ),
-        initialDateTime: _dateAnswerFormat.defaultDate,
+        initialDateTime: _dateAnswerFormat.defaultValue,
         onDateTimeChanged: (DateTime value) {
           setState(() {
             _result = value;

@@ -26,6 +26,7 @@ class _TimeAnswerViewState extends State<TimeAnswerView> {
   final DateTime _startDate = DateTime.now();
   late TimeAnswerFormat _timeAnswerFormat;
   late TimeOfDay? _result;
+  bool _changed = false;
 
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _TimeAnswerViewState extends State<TimeAnswerView> {
     _timeAnswerFormat = widget.questionStep.answerFormat as TimeAnswerFormat;
     _result = widget.result?.result ??
         _timeAnswerFormat.defaultValue ??
+        _timeAnswerFormat.savedResult?.result ??
         TimeOfDay.fromDateTime(
           DateTime.now(),
         );
@@ -42,13 +44,19 @@ class _TimeAnswerViewState extends State<TimeAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => TimeQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _result.toString(),
-        result: _result,
-      ),
+      resultFunction: () {
+        if (!_changed && _timeAnswerFormat.savedResult != null) {
+          return _timeAnswerFormat.savedResult!;
+        }
+
+        return TimeQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _result.toString(),
+          result: _result,
+        );
+      },
       isValid: widget.questionStep.isOptional || _result != null,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -93,6 +101,8 @@ class _TimeAnswerViewState extends State<TimeAnswerView> {
         timeChanged: (TimeOfDay time) {
           setState(() {
             _result = time;
+
+            _changed = true;
           });
         },
       ),
@@ -108,6 +118,8 @@ class _TimeAnswerViewState extends State<TimeAnswerView> {
         onDateTimeChanged: (DateTime newTime) {
           setState(() {
             _result = TimeOfDay.fromDateTime(newTime);
+
+            _changed = true;
           });
         },
       ),

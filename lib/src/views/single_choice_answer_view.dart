@@ -24,14 +24,16 @@ class _SingleChoiceAnswerViewState extends State<SingleChoiceAnswerView> {
   late final DateTime _startDate;
   late final SingleChoiceAnswerFormat _singleChoiceAnswerFormat;
   TextChoice? _selectedChoice;
+  bool _changed = false;
 
   @override
   void initState() {
     super.initState();
     _singleChoiceAnswerFormat =
         widget.questionStep.answerFormat as SingleChoiceAnswerFormat;
+
     _selectedChoice =
-        widget.result?.result ?? _singleChoiceAnswerFormat.defaultSelection;
+        widget.result?.result ?? _singleChoiceAnswerFormat.savedResult?.result;
     _startDate = DateTime.now();
   }
 
@@ -39,13 +41,19 @@ class _SingleChoiceAnswerViewState extends State<SingleChoiceAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => SingleChoiceQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _selectedChoice?.value ?? '',
-        result: _selectedChoice,
-      ),
+      resultFunction: () {
+        if (!_changed && _singleChoiceAnswerFormat.savedResult != null) {
+          return _singleChoiceAnswerFormat.savedResult!;
+        }
+
+        return SingleChoiceQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _selectedChoice?.value ?? '',
+          result: _selectedChoice,
+        );
+      },
       isValid: widget.questionStep.isOptional || _selectedChoice != null,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -86,7 +94,9 @@ class _SingleChoiceAnswerViewState extends State<SingleChoiceAnswerView> {
                         } else {
                           _selectedChoice = tc;
                         }
-                        setState(() {});
+                        setState(() {
+                          _changed = true;
+                        });
                       },
                       isSelected: _selectedChoice == tc,
                     );

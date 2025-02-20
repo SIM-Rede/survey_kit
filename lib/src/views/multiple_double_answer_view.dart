@@ -27,6 +27,7 @@ class _MultipleDoubleAnswerViewState extends State<MultipleDoubleAnswerView> {
   late final DateTime _startDate;
 
   bool _isValid = false;
+  bool _changed = false;
   List<MultiDouble> _insertedValues = [];
 
   @override
@@ -38,11 +39,16 @@ class _MultipleDoubleAnswerViewState extends State<MultipleDoubleAnswerView> {
       return TextEditingController();
     }).toList();
 
-    _controller.forEach((element) {
-      element = TextEditingController();
-      element.text = widget.result?.result?.toString() ?? '';
-      _checkValidation(element.text);
-    });
+    for (int i = 0; i <= _controller.length; i++) {
+      final controller = _controller.elementAt(i);
+
+      final val = widget.result?.result?.elementAtOrNull(i) ??
+          _multipleDoubleAnswer.savedResult?.result?.elementAtOrNull(i);
+
+      controller.text = val != null ? val.toString() : '';
+
+      _checkValidation(controller.text);
+    }
 
     _insertedValues = List.generate(
         _multipleDoubleAnswer.hints.length,
@@ -78,13 +84,19 @@ class _MultipleDoubleAnswerViewState extends State<MultipleDoubleAnswerView> {
 
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => MultipleDoubleQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: _controller.map((e) => e.text).join(', '),
-        result: _insertedValues,
-      ),
+      resultFunction: () {
+        if (!_changed && _multipleDoubleAnswer.savedResult != null) {
+          return _multipleDoubleAnswer.savedResult!;
+        }
+
+        return MultipleDoubleQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: _controller.map((e) => e.text).join(', '),
+          result: _insertedValues,
+        );
+      },
       isValid: _isValid || widget.questionStep.isOptional,
       title: widget.questionStep.title.isNotEmpty
           ? Text(
@@ -136,6 +148,8 @@ class _MultipleDoubleAnswerViewState extends State<MultipleDoubleAnswerView> {
                         text: md.value,
                         value: double.parse(value),
                       );
+
+                      if (_isValid) _changed = true;
                     },
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,

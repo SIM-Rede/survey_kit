@@ -88,14 +88,21 @@ class _StarAnswerViewState extends State<StarAnswerView> {
   double rating = 0;
 
   bool _isValid = false;
+  bool _changed = false;
 
   @override
   void initState() {
+    super.initState();
+    _starAnswerFormat = widget.questionStep.answerFormat as StarAnswerFormat;
+
+    final savedResult = _starAnswerFormat.savedResult;
+    if (savedResult != null && savedResult.result != null) {
+      rating = savedResult.result!.toDouble() / 2;
+    }
     if (widget.result != null && widget.result?.result != null) {
       this.rating = widget.result!.result!.toDouble() / 2;
     }
-    super.initState();
-    _starAnswerFormat = widget.questionStep.answerFormat as StarAnswerFormat;
+
     _startDate = DateTime.now();
   }
 
@@ -108,13 +115,19 @@ class _StarAnswerViewState extends State<StarAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
-      resultFunction: () => StarQuestionResult(
-        id: widget.questionStep.stepIdentifier,
-        startDate: _startDate,
-        endDate: DateTime.now(),
-        valueIdentifier: rating.toString(),
-        result: (rating * 2).toInt(),
-      ),
+      resultFunction: () {
+        if (!_changed && _starAnswerFormat.savedResult != null) {
+          return _starAnswerFormat.savedResult!;
+        }
+
+        return StarQuestionResult(
+          id: widget.questionStep.stepIdentifier,
+          startDate: _startDate,
+          endDate: DateTime.now(),
+          valueIdentifier: rating.toString(),
+          result: (rating * 2).toInt(),
+        );
+      },
       title: widget.questionStep.title.isNotEmpty
           ? Text(
               widget.questionStep.title,
@@ -136,7 +149,10 @@ class _StarAnswerViewState extends State<StarAnswerView> {
               StarRating(
                 rating: rating,
                 onRatingChanged: (rating) {
-                  setState(() => this.rating = rating);
+                  setState(() {
+                    this.rating = rating;
+                    this._changed = true;
+                  });
                 },
               ),
               Spacer(),

@@ -12,15 +12,15 @@ SingleChoiceAnswerFormat _$SingleChoiceAnswerFormatFromJson(
       textChoices: (json['textChoices'] as List<dynamic>)
           .map((e) => TextChoice.fromJson(e as Map<String, dynamic>))
           .toList(),
-      defaultSelection: json['defaultSelection'] == null
+      savedResult: json['savedResult'] == null
           ? null
-          : TextChoice.fromJson(
-              json['defaultSelection'] as Map<String, dynamic>),
+          : SingleChoiceQuestionResult.fromJson(
+              json['savedResult'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$SingleChoiceAnswerFormatToJson(
         SingleChoiceAnswerFormat instance) =>
     <String, dynamic>{
       'textChoices': instance.textChoices,
-      'defaultSelection': instance.defaultSelection,
+      'savedResult': instance.savedResult,
     };

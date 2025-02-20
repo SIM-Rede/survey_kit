@@ -12,19 +12,24 @@ MultipleChoiceAnswerFormat _$MultipleChoiceAnswerFormatFromJson(
       textChoices: (json['textChoices'] as List<dynamic>)
           .map((e) => TextChoice.fromJson(e as Map<String, dynamic>))
           .toList(),
-      defaultSelection: (json['defaultSelection'] as List<dynamic>?)
+      defaultValue: (json['defaultValue'] as List<dynamic>?)
               ?.map((e) => TextChoice.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       otherField: json['otherField'] as bool? ?? false,
       maxAnswers: (json['maxAnswers'] as num?)?.toInt() ?? 100,
+      savedResult: json['savedResult'] == null
+          ? null
+          : MultipleChoiceQuestionResult.fromJson(
+              json['savedResult'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$MultipleChoiceAnswerFormatToJson(
         MultipleChoiceAnswerFormat instance) =>
     <String, dynamic>{
       'textChoices': instance.textChoices,
-      'defaultSelection': instance.defaultSelection,
+      'defaultValue': instance.defaultValue,
+      'savedResult': instance.savedResult,
       'otherField': instance.otherField,
       'maxAnswers': instance.maxAnswers,
     };
