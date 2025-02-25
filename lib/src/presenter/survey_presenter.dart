@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:survey_kit/src/configuration/app_bar_configuration.dart';
+import 'package:survey_kit/src/navigator/navigable_task_navigator.dart';
 import 'package:survey_kit/src/navigator/task_navigator.dart';
 import 'package:survey_kit/src/presenter/survey_event.dart';
 import 'package:survey_kit/src/presenter/survey_state.dart';
@@ -64,7 +65,8 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
     if (taskNavigator.task.initalStepIdentifier != null) {
       // adds all results and add previous steps to history
       for (final step in taskNavigator.task.steps) {
-        if (step is QuestionStep) {
+        final isQuestionStep = step is QuestionStep;
+        if (isQuestionStep) {
           _addResult(step.answerFormat.savedResult);
         } else if (step is InstructionStep) {
           _addResult(step.result);
@@ -76,7 +78,12 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
             taskNavigator.task.initalStepIdentifier?.id) {
           break;
         }
-        taskNavigator.record(step);
+        if (isQuestionStep &&
+            step.answerFormat.isChildQuestion &&
+            step.answerFormat.savedResult == null) {
+        } else {
+          taskNavigator.record(step);
+        }
       }
     }
 
@@ -95,7 +102,7 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
       );
     }
 
-    //If not steps are provided we finish the survey
+    //If no steps are provided we finish the survey
     final taskResult = SurveyResult(
       id: taskNavigator.task.id,
       startDate: startDate,
@@ -124,6 +131,8 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
 
     QuestionResult? questionResult =
         _getResultByStepIdentifier(nextStep.stepIdentifier);
+
+    _resetChildQuestionState(questionResult, currentState);
 
     return PresentingSurveyState(
       currentStep: nextStep,
@@ -257,5 +266,29 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
   int get countSteps => taskNavigator.countSteps;
   int currentStepIndex(Step step) {
     return taskNavigator.currentStepIndex(step);
+  }
+
+  void _resetChildQuestionState(QuestionResult<dynamic>? questionResult,
+      PresentingSurveyState currentState) {
+    if (questionResult != null && taskNavigator is NavigableTaskNavigator) {
+      final navigator = taskNavigator as NavigableTaskNavigator;
+      final currentStep = currentState.currentStep as QuestionStep;
+      final childId = currentStep.answerFormat.childQuestionId;
+      if (childId != null) {
+        final nextStepIdentifier = navigator.getNextStepIdentifierByRule(
+            currentStep.stepIdentifier, null, null);
+
+        // If next step is not the child,
+        if (nextStepIdentifier?.id != childId) {
+          // removes any saved result from the child question from the results stack
+          results
+              .removeWhere((whereResult) => whereResult.id?.id == childId.id);
+          // removes child step from history
+          taskNavigator.history.removeWhere((whereStep) =>
+              whereStep is QuestionStep &&
+              whereStep.stepIdentifier.id == childId.id);
+        }
+      }
+    }
   }
 }

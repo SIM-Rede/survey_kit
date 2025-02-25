@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:survey_kit/src/answer_format/answer_format.dart';
 import 'package:survey_kit/src/answer_format/text_choice.dart';
 import 'package:survey_kit/src/result/question/multiple_choice_question_result.dart';
+import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 
 part 'multiple_choice_auto_complete_answer_format.g.dart';
 
@@ -16,12 +17,17 @@ class MultipleChoiceAutoCompleteAnswerFormat implements AnswerFormat {
   @JsonKey(defaultValue: false)
   final bool otherField;
 
+  final bool isChildQuestion;
+  final StepIdentifier? childQuestionId;
+
   const MultipleChoiceAutoCompleteAnswerFormat({
     required this.textChoices,
     this.defaultValue = const [],
     this.suggestions = const [],
     this.otherField = false,
     this.savedResult,
+    this.isChildQuestion = false,
+    this.childQuestionId,
   }) : super();
 
   factory MultipleChoiceAutoCompleteAnswerFormat.fromJson(

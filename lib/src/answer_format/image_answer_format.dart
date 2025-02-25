@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:survey_kit/src/answer_format/answer_format.dart';
 import 'package:survey_kit/src/result/question/image_question_result.dart';
+import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 
 part 'image_answer_format.g.dart';
 
@@ -14,6 +15,9 @@ class ImageAnswerFormat implements AnswerFormat {
   final String? hintImage;
   final String? hintTitle;
 
+  final bool isChildQuestion;
+  final StepIdentifier? childQuestionId;
+
   const ImageAnswerFormat({
     this.defaultValue,
     this.buttonText = 'Image: ',
@@ -22,6 +26,8 @@ class ImageAnswerFormat implements AnswerFormat {
     this.hintImage,
     this.hintTitle,
     this.savedResult,
+    this.isChildQuestion = false,
+    this.childQuestionId,
   }) : super();
 
   factory ImageAnswerFormat.fromJson(Map<String, dynamic> json) =>

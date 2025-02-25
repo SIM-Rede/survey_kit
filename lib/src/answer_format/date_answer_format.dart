@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:survey_kit/src/answer_format/answer_format.dart';
 import 'package:survey_kit/src/result/question/date_question_result.dart';
+import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 
 part 'date_answer_format.g.dart';
 
@@ -16,12 +17,16 @@ class DateAnswerFormat implements AnswerFormat {
   final DateTime? maxDate;
 
   final DateQuestionResult? savedResult;
+  final bool isChildQuestion;
+  final StepIdentifier? childQuestionId;
 
   DateAnswerFormat({
     this.defaultValue,
     this.minDate,
     this.maxDate,
     this.savedResult,
+    this.isChildQuestion = false,
+    this.childQuestionId,
   })  : assert(minDate == null || maxDate == null || minDate.isBefore(maxDate)),
         assert(defaultValue == null ||
             minDate == null ||
