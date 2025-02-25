@@ -3,6 +3,7 @@ import 'package:survey_kit/src/navigator/rules/direct_navigation_rule.dart';
 import 'package:survey_kit/src/navigator/rules/navigation_rule.dart';
 import 'package:survey_kit/src/navigator/task_navigator.dart';
 import 'package:survey_kit/src/result/question_result.dart';
+import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 import 'package:survey_kit/src/steps/step.dart';
 import 'package:survey_kit/src/task/navigable_task.dart';
 import 'package:survey_kit/src/task/task.dart';
@@ -13,9 +14,7 @@ class NavigableTaskNavigator extends TaskNavigator {
   @override
   Step? nextStep({required Step step, QuestionResult? questionResult}) {
     record(step);
-    final navigableTask = task as NavigableTask;
-    NavigationRule? rule =
-        navigableTask.getRuleByStepIdentifier(step.stepIdentifier);
+    NavigationRule? rule = _getNavigationRule(step.stepIdentifier);
     if (rule == null) {
       return nextInList(step);
     }
@@ -44,16 +43,36 @@ class NavigableTaskNavigator extends TaskNavigator {
     return history.removeLast();
   }
 
+  NavigationRule? _getNavigationRule(StepIdentifier stepIdentifier) {
+    final navigableTask = task as NavigableTask;
+
+    return navigableTask.getRuleByStepIdentifier(stepIdentifier);
+  }
+
+  StepIdentifier? getNextStepIdentifierByRule(
+      StepIdentifier currentStepIdentifier,
+      ConditionalNavigationRule? knownRule,
+      QuestionResult<dynamic>? questionResult) {
+    final ConditionalNavigationRule? rule = knownRule ??
+        _getNavigationRule(currentStepIdentifier) as ConditionalNavigationRule?;
+
+    final nextStepIdentifier =
+        rule?.resultToStepIdentifierMapper(questionResult?.valueIdentifier);
+    return nextStepIdentifier;
+  }
+
   Step? evaluateNextStep(
-    Step? step,
+    Step step,
     ConditionalNavigationRule rule,
     QuestionResult<dynamic>? questionResult,
   ) {
     if (questionResult == null) {
       return nextInList(step);
     }
+
     final nextStepIdentifier =
-        rule.resultToStepIdentifierMapper(questionResult.valueIdentifier);
+        getNextStepIdentifierByRule(step.stepIdentifier, rule, questionResult);
+
     if (nextStepIdentifier == null) {
       return nextInList(step);
     }

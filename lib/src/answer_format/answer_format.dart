@@ -14,12 +14,16 @@ import 'package:survey_kit/src/answer_format/star_answer_format.dart';
 import 'package:survey_kit/src/answer_format/text_answer_format.dart';
 import 'package:survey_kit/src/answer_format/time_answer_formart.dart';
 import 'package:survey_kit/src/result/question_result.dart';
+import 'package:survey_kit/src/steps/identifier/step_identifier.dart';
 import 'package:survey_kit/src/steps/predefined_steps/answer_format_not_defined_exception.dart';
 
 abstract class AnswerFormat {
-  const AnswerFormat(this.savedResult);
+  const AnswerFormat(
+      {this.savedResult, this.isChildQuestion = false, this.childQuestionId});
 
   final QuestionResult? savedResult;
+  final bool isChildQuestion;
+  final StepIdentifier? childQuestionId;
 
   factory AnswerFormat.fromJson(Map<String, dynamic> json) {
     switch (json['type'] as String) {
