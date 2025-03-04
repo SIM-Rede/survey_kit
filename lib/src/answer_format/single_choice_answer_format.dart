@@ -9,11 +9,11 @@ part 'single_choice_answer_format.g.dart';
 @JsonSerializable()
 class SingleChoiceAnswerFormat implements AnswerFormat {
   final List<TextChoice> textChoices;
-  final SingleChoiceQuestionResult? savedResult;
+  SingleChoiceQuestionResult? savedResult;
   final bool isChildQuestion;
   final StepIdentifier? childQuestionId;
 
-  const SingleChoiceAnswerFormat({
+  SingleChoiceAnswerFormat({
     required this.textChoices,
     this.savedResult,
     this.isChildQuestion = false,

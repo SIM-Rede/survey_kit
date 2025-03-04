@@ -270,7 +270,9 @@ class SurveyPresenter extends Bloc<SurveyEvent, SurveyState> {
 
   void _resetChildQuestionState(QuestionResult<dynamic>? questionResult,
       PresentingSurveyState currentState) {
-    if (questionResult != null && taskNavigator is NavigableTaskNavigator) {
+    if (questionResult != null &&
+        taskNavigator is NavigableTaskNavigator &&
+        currentState.currentStep is QuestionStep) {
       final navigator = taskNavigator as NavigableTaskNavigator;
       final currentStep = currentState.currentStep as QuestionStep;
       final childId = currentStep.answerFormat.childQuestionId;
