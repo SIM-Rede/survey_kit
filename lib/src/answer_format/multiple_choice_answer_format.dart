@@ -11,7 +11,7 @@ class MultipleChoiceAnswerFormat implements AnswerFormat {
   final List<TextChoice> textChoices;
   @JsonKey(defaultValue: const [])
   final List<TextChoice> defaultValue;
-  final MultipleChoiceQuestionResult? savedResult;
+  MultipleChoiceQuestionResult? savedResult;
   @JsonKey(defaultValue: false)
   final bool otherField;
   @JsonKey(defaultValue: 100)
@@ -20,7 +20,7 @@ class MultipleChoiceAnswerFormat implements AnswerFormat {
   final bool isChildQuestion;
   final StepIdentifier? childQuestionId;
 
-  const MultipleChoiceAnswerFormat({
+  MultipleChoiceAnswerFormat({
     required this.textChoices,
     this.defaultValue = const [],
     this.otherField = false,

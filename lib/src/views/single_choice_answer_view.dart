@@ -44,15 +44,18 @@ class _SingleChoiceAnswerViewState extends State<SingleChoiceAnswerView> {
       resultFunction: () {
         if (!_changed && _singleChoiceAnswerFormat.savedResult != null) {
           return _singleChoiceAnswerFormat.savedResult!;
-        }
+        } else {
+          final newResult = SingleChoiceQuestionResult(
+            id: widget.questionStep.stepIdentifier,
+            startDate: _startDate,
+            endDate: DateTime.now(),
+            valueIdentifier: _selectedChoice?.value ?? '',
+            result: _selectedChoice,
+          );
+          _singleChoiceAnswerFormat.savedResult = newResult;
 
-        return SingleChoiceQuestionResult(
-          id: widget.questionStep.stepIdentifier,
-          startDate: _startDate,
-          endDate: DateTime.now(),
-          valueIdentifier: _selectedChoice?.value ?? '',
-          result: _selectedChoice,
-        );
+          return newResult;
+        }
       },
       isValid: widget.questionStep.isOptional || _selectedChoice != null,
       title: widget.questionStep.title.isNotEmpty

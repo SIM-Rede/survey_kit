@@ -47,16 +47,18 @@ class _MultipleChoiceAnswerView extends State<MultipleChoiceAnswerView> {
       resultFunction: () {
         if (!_changed && _multipleChoiceAnswer.savedResult != null) {
           return _multipleChoiceAnswer.savedResult!;
+        } else {
+          final newResult = MultipleChoiceQuestionResult(
+            id: widget.questionStep.stepIdentifier,
+            startDate: _startDateTime,
+            endDate: DateTime.now(),
+            valueIdentifier:
+                _selectedChoices.map((choices) => choices.value).join(','),
+            result: _selectedChoices,
+          );
+          _multipleChoiceAnswer.savedResult = newResult;
+          return newResult;
         }
-
-        return MultipleChoiceQuestionResult(
-          id: widget.questionStep.stepIdentifier,
-          startDate: _startDateTime,
-          endDate: DateTime.now(),
-          valueIdentifier:
-              _selectedChoices.map((choices) => choices.value).join(','),
-          result: _selectedChoices,
-        );
       },
       isValid: widget.questionStep.isOptional || _selectedChoices.isNotEmpty,
       title: widget.questionStep.title.isNotEmpty
@@ -95,6 +97,7 @@ class _MultipleChoiceAnswerView extends State<MultipleChoiceAnswerView> {
                         onTap: () {
                           setState(
                             () {
+                              _changed = true;
                               if (_selectedChoices.contains(tc)) {
                                 _selectedChoices.remove(tc);
                               } else {
